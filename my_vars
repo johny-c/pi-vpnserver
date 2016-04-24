@@ -1,0 +1,8 @@
+# set variables to automate the VPN configuration
+
+SERVER_NAME=raspberrypi-server
+SERVER_LOCAL_IP=192.168.X.X
+SERVER_PUBLIC_IP=X.X.X.X
+KEY_SIZE=2048
+VPN_PORT=1194
+IFACE_TYPE=eth0 # set to wlan0 for wireless server
