@@ -68,6 +68,15 @@ KEY_SIZE=$( read_input "Choose authentication key size" $KEY_SIZE )
 SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME ) 
 CLIENT_NAME=$( read_input "Pick a name for your client" $CLIENT_NAME ) 
 
+export IFACE_TYPE=$IFACE_TYPE
+export SERVER_LOCAL_IP=$SERVER_LOCAL_IP
+export SERVER_PUBLIC_IP=$SERVER_PUBLIC_IP
+export GATEWAY_IP=$GATEWAY_IP
+export LAN_IP=$LAN_IP
+export VPN_PORT=$VPN_PORT
+export KEY_SIZE=$KEY_SIZE
+export SERVER_NAME=$SERVER_NAME
+export CLIENT_NAME=$CLIENT_NAME
 
 echo Done!
 echo "This is your configuration:\n"

@@ -4,8 +4,11 @@ echo Setting up Raspberry Pi as an openVPN server!
 echo First make sure you have correctly filled in your configuration in the 'my_vars' file
 
 # Set the main working directory for our VPN setup
-DDIR=$(pwd)
-ERDIR=/etc/openvpn/easy-rsa
+export DDIR=$( dirname "$(readlink -f "$0")" )
+export ERDIR="/etc/openvpn/easy-rsa"
+
+# Set up variables
+./my_vars
 
 ## Update the Server
 sudo -s
