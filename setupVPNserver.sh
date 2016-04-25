@@ -7,16 +7,13 @@ echo First make sure you have correctly filled in your configuration in the 'my_
 export DDIR=$( dirname "$(readlink -f "$0")" )
 export ERDIR="/etc/openvpn/easy-rsa"
 
-# Set up variables
-./my_vars
-
 ## Update the Server
 sudo -s
 apt-get update
 apt-get upgrade
 
 ## Install the software
-apt-get install openvpn easy-rsa
+apt-get install openvpn easy-rsa curl
 mkdir /etc/openvpn/easy-rsa
 cp /usr/share/easy-rsa /etc/openvpn/easy-rsa
 
@@ -29,6 +26,10 @@ $lineold=$(cat $forig | grep "export EASY_RSA")
 $linenew="export EASY_RSA=$ERDIR"
 sed -i -- 's/lineold/linenew/g' $fnew
 
+## Setup variables automatically
+./my_vars 
+
+## Continue with regular procedure
 source ./vars
 ./clean-all
 ./build-ca

@@ -1,6 +1,7 @@
 #!/bin/sh
-# Configuration variables to automate the VPN setup
-# Set some default values
+## Configuration variables to automate the VPN setup
+
+## Set some default values
 
 # Network variables
 SERVER_LOCAL_IP=192.168.1.5
@@ -34,7 +35,7 @@ read_input(){
 }
 
 
-# Setup network variables
+## Setup network variables
 echo Trying to figure out your network configuration . . .
 echo "Press enter to keep the default choice.\n"
 
@@ -47,9 +48,8 @@ $2}' | cut -d '/' -f 1)
 SERVER_LOCAL_IP=$( read_input "Local ip address" $SERVER_LOCAL_IP )
 
 # Set server public ip
-SERVER_PUBLIC_IP=$(wget http://ipinfo.io/ip -qO -)
+SERVER_PUBLIC_IP=$(curl -s https://api.ipify.org)
 SERVER_PUBLIC_IP=$( read_input "Public ip address" $SERVER_PUBLIC_IP )
-
 
 # Set gateway ip
 GATEWAY_IP=$( netstat -nr | head -3 | tail -1 | awk '{print $2}' )
@@ -59,7 +59,7 @@ GATEWAY_IP=$( read_input "Gateway(router) ip address" $GATEWAY_IP )
 LAN_IP=$( netstat -nr | tail -1 | awk '{print $1}' )
 LAN_IP=$( read_input "Local subnet ip address" $LAN_IP )
 
-# Setup user variables
+## Setup user variables
 echo "\nA few more to go . . ."
 echo "Press enter to keep the default choice.\n"
 
@@ -68,6 +68,7 @@ KEY_SIZE=$( read_input "Choose authentication key size" $KEY_SIZE )
 SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME ) 
 CLIENT_NAME=$( read_input "Pick a name for your client" $CLIENT_NAME ) 
 
+## Make variables available to subprocesses
 export IFACE_TYPE=$IFACE_TYPE
 export SERVER_LOCAL_IP=$SERVER_LOCAL_IP
 export SERVER_PUBLIC_IP=$SERVER_PUBLIC_IP
@@ -78,6 +79,7 @@ export KEY_SIZE=$KEY_SIZE
 export SERVER_NAME=$SERVER_NAME
 export CLIENT_NAME=$CLIENT_NAME
 
+## Print setup
 echo Done!
 echo "This is your configuration:\n"
 echo "Network interface: $IFACE_TYPE"
