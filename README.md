@@ -1,9 +1,10 @@
 # Raspberry-Pi-OVPN-Server
 Setup Raspberry Pi as an openVPN server
 
-# This fork tries to automate things to speed up the process
-The following commands show what's happening
-The goal is to run only one (+one for each client) script
+## This fork tries to automate things to speed up the process
+The following commands show what's happening.
+
+But the goal in the end is to run only one (+one for each client) script:
 ```
 ./setupVPNserver.sh
 ./setupVPNclient.sh
