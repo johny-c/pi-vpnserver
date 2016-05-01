@@ -13,7 +13,6 @@ GATEWAY_IP=192.168.1.1
 KEY_SIZE=2048
 VPN_PORT=1194
 IFACE_TYPE=eth0 # set to wlan0 for wireless server
-
 SERVER_NAME=my_vpn_server
 CLIENT_NAME=my_vpn_client
 
@@ -91,9 +90,3 @@ echo "VPN port:          $VPN_PORT"
 echo "Key size:          $KEY_SIZE"
 echo "Server name:       $SERVER_NAME"
 echo "Client name:       $CLIENT_NAME"
-
-
-
-
-
-

@@ -1,7 +1,16 @@
 #!/bin/sh
 # Raspberry-Pi-OVPN-Server
 echo Setting up Raspberry Pi as an openVPN server!
-echo First make sure you have correctly filled in your configuration in the 'my_vars' file
+$tutorial_URL="readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing/"
+echo This program follows the instructions from $tutorial_URL .
+echo First make sure you have correctly filled in your configuration in the file 'my_vars'
+
+
+# First change your password
+echo "It is highly recommended to change your pi's default password before 
+doing anything else"
+echo "Do you wish to change your password?
+
 
 # Set the main working directory for our VPN setup
 export DDIR=$( dirname "$(readlink -f "$0")" )
