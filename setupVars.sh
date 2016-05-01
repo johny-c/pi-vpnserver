@@ -3,7 +3,7 @@
 
 # Set the main working directory for our VPN setup
 export DDIR=$( dirname "$(readlink -f "$0")" )
-export ERDIR="/etc/openvpn/easy-rsa"
+export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 
 ## Set some default values
 
@@ -42,8 +42,7 @@ printf "Press enter to keep the default choice.\n"
 IFACE_TYPE=$( read_input "Use eth0 or wlan0 network interface" $IFACE_TYPE )
 
 # Set server local ip
-SERVER_LOCAL_IP=$(ip addr show $IFACE_TYPE | grep "inet" | grep -v "inet6" | awk '{print
-$2}' | cut -d '/' -f 1)
+SERVER_LOCAL_IP=$(ip addr show $IFACE_TYPE | grep "inet" | grep -v "inet6" | awk '{print $2}' | cut -d '/' -f 1)
 SERVER_LOCAL_IP=$( read_input "Local ip address" $SERVER_LOCAL_IP )
 
 # Set server public ip

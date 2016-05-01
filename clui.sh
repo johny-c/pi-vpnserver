@@ -38,6 +38,7 @@ while [ $ans == 'y' ]; do
     while [ $ans != 'y' && $ans != 'n' ]; do
         printf "Do you wish to change your configuration? (y/n)\n"
         read ans
+        printf "You typed %s\n" $ans
     done
 done
 
