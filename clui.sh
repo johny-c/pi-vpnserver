@@ -18,6 +18,13 @@ if [ $ans == 'y' ]; then
     sudo passwd
 fi
 
+# Set the main working directory for our VPN setup
+export DDIR=$( dirname "$(readlink -f "$0")" )
+export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
+
+## Source utility functions
+. $DDIR/utils.sh
+
 ## Setup variables
 ans='y'
 while [ $ans == 'y' ]; do
@@ -31,10 +38,12 @@ while [ $ans == 'y' ]; do
     done
 done
 
+printConfig
+
 printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh
 
 printf "Your VPN server is set. Now setting up the clients...\n"
-./setupVPNclient.sh
+./setupVPNclients.sh
 
 printf "You are done! Just copy the [client].ovpn files to the actual clients!\n"

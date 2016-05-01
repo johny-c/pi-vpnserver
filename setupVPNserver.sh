@@ -2,6 +2,10 @@
 # Raspberry-Pi-OVPN-Server
 printf "Setting up Raspberry Pi as an openVPN server!\n"
 
+netif="/etc/network/interfaces"
+fwrul="/etc/firewall-openvpn-rules.sh"
+
+
 ## Update the Server
 sudo -s
 apt-get update
@@ -9,19 +13,20 @@ apt-get upgrade
 
 ## Install the software
 apt-get install openvpn easy-rsa curl
-mkdir /etc/openvpn/easy-rsa
-cp /usr/share/easy-rsa /etc/openvpn/easy-rsa
+mkdir $ERDIR
+cp /usr/share/easy-rsa $ERDIR
 
 ## Edit the vars file
 #- change line export EASY_RSA to
 #*export EASY_RSA="/etc/openvpn/easy-rsa"*
-$fnew=$ERDIR/vars
-$forig=/usr/share/easy-rsa/vars
-$lineold=$(cat $forig | grep "export EASY_RSA")
-$linenew="export EASY_RSA=$ERDIR"
+fnew=$ERDIR/vars
+forig=/usr/share/easy-rsa/vars
+lineold=$(cat $forig | grep "export EASY_RSA")
+linenew="export EASY_RSA=$ERDIR"
 sed -i -- 's/lineold/linenew/g' $fnew
 
 ## Continue with regular procedure
+cd $ERDIR
 source ./vars
 ./clean-all
 ./build-ca
@@ -34,9 +39,13 @@ source ./vars
 
 ## Build the key for your server, enter a vpn username
 #- challenge password must be left blank
-./build-key-pass $CLIENT_NAME
-cd $ERDIR/keys
-openssl rss -in ($CLIENT_NAME).key -des3 -out ($CLIENT_NAME).3des.key
+for CLIENT_NAME in "${CLIENT_NAMES[@]}"; do
+    cd $ERDIR
+    ./build-key-pass $CLIENT_NAME
+    cd $ERDIR/keys
+    openssl rsa -in $CLIENT_NAME.key -des3 -out $CLIENT_NAME.3des.key
+done
+
 cd $ERDIR
 printf "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)..."
 printf "Running Diffie-Hellman algorithm . . ."
@@ -57,8 +66,8 @@ cp $DDIR/server.conf /etc/openvpn/
 #- uncomment the line
 #*net.ipv4.ip_forward=1*
 printf "Uncommenting line to enable packet forwarding in /etc/sysctl.conf"
-$newline="net.ipv4.ip_forward=1"
-$oldline="#$newline"
+newline="net.ipv4.ip_forward=1"
+oldline="#$newline"
 sed -i -- 's/$oldline/$newline/g' /etc/sysctl.conf
 #nano /etc/sysctl.conf
 sysctl -p
@@ -73,10 +82,10 @@ cp $DDIR/firewall-openvpn-rules.sh /etc/
 
 ## Update your interface file
 #- add line to interfaces file with a tab at the beginning
-printf "Updating /etc/network/interfaces with firewall-openvpn-rules"
-$oldline=$(cat /etc/network/interfaces | grep "iface $IFACE_TYPE inet ")
-$newline="$oldline\tpre-up /etc/firewall-openvpn-rules.sh"
-sed -i -- 's/$oldline/$newline/g' /etc/networks/interfaces
+printf "Updating $netif with firewall-openvpn-rules"
+oldline=$(cat $netif | grep "iface $IFACE_TYPE inet ")
+newline="$oldline\tpre-up $fwrul"
+sed -i -- 's/$oldline/$newline/g' $netif
 
 ## Reboot the server
 printf "Server should be set up now!"

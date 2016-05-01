@@ -1,10 +1,6 @@
 #!/bin/bash
 ## Configuration variables to automate the VPN setup
 
-# Set the main working directory for our VPN setup
-export DDIR=$( dirname "$(readlink -f "$0")" )
-export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
-
 ## Set some default values
 
 # Network variables
@@ -69,7 +65,6 @@ while [ $new_client -gt 0 ]; do
         new_client=0
     fi
 done
-
 
 ## Make variables available to subprocesses
 export IFACE_TYPE="$IFACE_TYPE"
