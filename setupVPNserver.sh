@@ -1,20 +1,6 @@
 #!/bin/sh
 # Raspberry-Pi-OVPN-Server
 echo Setting up Raspberry Pi as an openVPN server!
-$tutorial_URL="readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing/"
-echo This program follows the instructions from $tutorial_URL .
-echo First make sure you have correctly filled in your configuration in the file 'my_vars'
-
-
-# First change your password
-echo "It is highly recommended to change your pi's default password before 
-doing anything else"
-echo "Do you wish to change your password?
-
-
-# Set the main working directory for our VPN setup
-export DDIR=$( dirname "$(readlink -f "$0")" )
-export ERDIR="/etc/openvpn/easy-rsa"
 
 ## Update the Server
 sudo -s
@@ -35,9 +21,6 @@ $lineold=$(cat $forig | grep "export EASY_RSA")
 $linenew="export EASY_RSA=$ERDIR"
 sed -i -- 's/lineold/linenew/g' $fnew
 
-## Setup variables automatically
-./my_vars 
-
 ## Continue with regular procedure
 source ./vars
 ./clean-all
@@ -46,19 +29,16 @@ source ./vars
 ## Build key for your server, name your server here
 #- when prompted common name must equal [server name]
 #- challenge password must be left blank
-
 ./build-key-server $SERVER_NAME
 
 
 ## Build the key for your server, enter a vpn username
 #- challenge password must be left blank
-
 ./build-key-pass $CLIENT_NAME
 cd $ERDIR/keys
 openssl rss -in ($CLIENT_NAME).key -des3 -out ($CLIENT_NAME).3des.key
 cd $ERDIR
-echo Now you have to wait for a while "(about 1 hour on a Raspberry Pi 1 Model 
-B)"...
+echo "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)..."
 echo Running Diffie-Hellman algorithm
 ./build-dh
 echo DH algorithm finished!
@@ -101,6 +81,6 @@ sed -i -- 's/$oldline/$newline/g' /etc/networks/interfaces
 ## Reboot the server
 echo Server should be set up now! 
 echo "You still have to set up the client(s)"
-echo Rebooting...
+echo Now rebooting...
+echo ""
 reboot
-

@@ -8,10 +8,14 @@ KEY=".3des.key"
 CA="ca.crt" 
 TA="ta.key" 
  
-#Ask for a Client name 
-echo "Please enter an existing Client Name:"
-read NAME 
- 
+# Check if client name given as argument
+if [ -n "$1" ]; then
+    NAME=$1
+else
+    #Ask for a Client name 
+    echo "Please enter an existing Client Name:"
+    read NAME 
+fi
  
 #1st Verify that client’s Public Key Exists 
 if [ ! -f $NAME$CRT ]; then 

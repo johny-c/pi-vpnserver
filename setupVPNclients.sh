@@ -15,7 +15,9 @@ chmod 700 $ERDIR/makeOVPN.sh
 #- enter [vpn_username] when prompted
 #- export the [vpn_username].ovpn file to clients
 
-./makeOVPN.sh
+for i in ${CLIENT_NAMES[@]}; do
+    ./makeOVPN.sh ${i}
+done
 
 
 

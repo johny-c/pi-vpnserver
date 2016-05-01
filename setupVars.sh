@@ -4,45 +4,41 @@
 ## Set some default values
 
 # Network variables
-SERVER_LOCAL_IP=192.168.1.5
-SERVER_PUBLIC_IP=123.456.789.123
-LAN_IP=192.168.1.0
-GATEWAY_IP=192.168.1.1
+SERVER_LOCAL_IP="192.168.1.5"
+SERVER_PUBLIC_IP="123.456.789.123"
+LAN_IP="192.168.1.0"
+GATEWAY_IP="192.168.1.1"
 
 # User variables
 KEY_SIZE=2048
 VPN_PORT=1194
-IFACE_TYPE=eth0 # set to wlan0 for wireless server
-SERVER_NAME=my_vpn_server
-CLIENT_NAME=my_vpn_client
+IFACE_TYPE="eth0" # set to wlan0 for wireless server
+SERVER_NAME="my_vpn_server"
+CLIENT_NAMES=("vpn_client1" "vpn_client2")
 
 # Utility function
 read_input(){
     question="$1"
     default="$2"
-    # Get a carriage return into `cr` -- there *has* to be a better way to do 
-    # this
-    #cr=`echo $'\n.'`
-    #cr=${cr%.}
     q="$1 ($2)? "
     read -rp "$q" ans
     if [ -n "$ans" ]; then
-        printf '%s' "$ans"
+        printf "%s" "$ans"
     else
-        printf '%s' "$default"
+        printf "%s" "$default"
     fi
 }
 
 
 ## Setup network variables
-echo Trying to figure out your network configuration . . .
-echo "Press enter to keep the default choice.\n"
+printf "Trying to figure out your network configuration . . ."
+printf "Press enter to keep the default choice.\n"
 
 # Set network interface
 IFACE_TYPE=$( read_input "Use eth0 or wlan0 network interface" $IFACE_TYPE )
 
 # Set server local ip
-SERVER_LOCAL_IP=$(ip addr show $IFACE_TYPE | grep "inet" | grep -v "inet6" | awk '{print 
+SERVER_LOCAL_IP=$(ip addr show $IFACE_TYPE | grep "inet" | grep -v "inet6" | awk '{print
 $2}' | cut -d '/' -f 1)
 SERVER_LOCAL_IP=$( read_input "Local ip address" $SERVER_LOCAL_IP )
 
@@ -59,13 +55,26 @@ LAN_IP=$( netstat -nr | tail -1 | awk '{print $1}' )
 LAN_IP=$( read_input "Local subnet ip address" $LAN_IP )
 
 ## Setup user variables
-echo "\nA few more to go . . ."
-echo "Press enter to keep the default choice.\n"
+printf "\nA few more to go . . ."
+printf "Press enter to keep the default choice.\n"
 
-VPN_PORT=$( read_input "Pick a port allowing VPN connections on your server" $VPN_PORT ) 
-KEY_SIZE=$( read_input "Choose authentication key size" $KEY_SIZE ) 
-SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME ) 
-CLIENT_NAME=$( read_input "Pick a name for your client" $CLIENT_NAME ) 
+VPN_PORT=$( read_input "Pick a port allowing VPN connections on your server" $VPN_PORT )
+KEY_SIZE=$( read_input "Choose authentication key size" $KEY_SIZE )
+SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME )
+
+new_client=1
+i=0
+while [ test $new_client -gt 0 ]; do
+    printf "Pick a name for your client no %d or leave blank to stop adding clients." $i+1
+    read CLIENT_NAME
+
+    if [ -n $CLIENT_NAME ]; then
+        CLIENT_NAMES+=("$CLIENT_NAME")
+    else
+        new_client=0
+    fi
+done
+
 
 ## Make variables available to subprocesses
 export IFACE_TYPE=$IFACE_TYPE
@@ -76,17 +85,7 @@ export LAN_IP=$LAN_IP
 export VPN_PORT=$VPN_PORT
 export KEY_SIZE=$KEY_SIZE
 export SERVER_NAME=$SERVER_NAME
-export CLIENT_NAME=$CLIENT_NAME
+export CLIENT_NAMES=$CLIENT_NAMES
 
 ## Print setup
-echo Done!
-echo "This is your configuration:\n"
-echo "Network interface: $IFACE_TYPE"
-echo "Local IP:          $SERVER_LOCAL_IP"
-echo "Public IP:         $SERVER_PUBLIC_IP"
-echo "Gateway IP:        $GATEWAY_IP"
-echo "Local subnet IP:   $LAN_IP"
-echo "VPN port:          $VPN_PORT"
-echo "Key size:          $KEY_SIZE"
-echo "Server name:       $SERVER_NAME"
-echo "Client name:       $CLIENT_NAME"
+printf "Done!"
