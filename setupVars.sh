@@ -26,10 +26,11 @@ read_input(){
     default="$2"
     q="$1 ($2)? "
     read -rp "$q" ans
+
     if [ -n "$ans" ]; then
-        printf "%s" "$ans"
+        printf '%s' "$ans"
     else
-        printf "%s" "$default"
+        printf '%s' "$default"
     fi
 }
 
@@ -68,11 +69,13 @@ SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME )
 new_client=1
 i=0
 while [ $new_client -gt 0 ]; do
-    printf "Pick a name for your client no %d or leave blank to stop adding clients." $i+1
+    printf "Pick a name for your client no %d or leave blank to stop adding clients.\n" $(expr $i + 1)
     read CLIENT_NAME
 
-    if [ -n $CLIENT_NAME ]; then
+    printf "You typed %s\n" "$CLIENT_NAME"
+    if [ -n "$CLIENT_NAME" ]; then
         CLIENT_NAMES+=("$CLIENT_NAME")
+	i=$(expr $i + 1)
     else
         new_client=0
     fi
@@ -80,7 +83,7 @@ done
 
 
 ## Make variables available to subprocesses
-export IFACE_TYPE=$IFACE_TYPE
+export IFACE_TYPE="$IFACE_TYPE"
 export SERVER_LOCAL_IP=$SERVER_LOCAL_IP
 export SERVER_PUBLIC_IP=$SERVER_PUBLIC_IP
 export GATEWAY_IP=$GATEWAY_IP
@@ -90,5 +93,3 @@ export KEY_SIZE=$KEY_SIZE
 export SERVER_NAME=$SERVER_NAME
 export CLIENT_NAMES=$CLIENT_NAMES
 
-## Print setup
-printf "Done!"

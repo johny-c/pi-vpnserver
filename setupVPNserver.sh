@@ -1,6 +1,6 @@
 #!/bin/bash
 # Raspberry-Pi-OVPN-Server
-printf "Setting up Raspberry Pi as an openVPN server!"
+printf "Setting up Raspberry Pi as an openVPN server!\n"
 
 ## Update the Server
 sudo -s
