@@ -20,20 +20,7 @@ IFACE_TYPE="eth0" # set to wlan0 for wireless server
 SERVER_NAME="my_vpn_server"
 CLIENT_NAMES=("vpn_client1" "vpn_client2")
 
-# Utility function
-read_input(){
-    question="$1"
-    default="$2"
-    q="$1 ($2)? "
-    read -p "$q" ans
-
-    if [ -n "$ans" ]; then
-        printf '%s' "$ans"
-    else
-        printf '%s' "$default"
-    fi
-}
-
+. $DDIR/utils.sh
 
 ## Setup network variables
 printf "Trying to figure out your network configuration . . ."
@@ -69,6 +56,7 @@ SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME )
 
 new_client=1
 i=0
+CLIENT_NAMES=()
 while [ $new_client -gt 0 ]; do
     printf "Pick a name for your client no %d or leave blank to stop adding clients.\n" $(expr $i + 1)
     read CLIENT_NAME
@@ -94,20 +82,4 @@ export KEY_SIZE=$KEY_SIZE
 export SERVER_NAME=$SERVER_NAME
 export CLIENT_NAMES=$CLIENT_NAMES
 
-
-
-    ## Print setup
-    printf "Done! This is your configuration:\n\n"
-    printf "Network interface: %s\n" "$IFACE_TYPE"
-    printf "Local IP:          %s\n" "$SERVER_LOCAL_IP"
-    printf "Public IP:         %s\n" "$SERVER_PUBLIC_IP"
-    printf "Gateway IP:        %s\n" "$GATEWAY_IP"
-    printf "Local subnet IP:   %s\n" "$LAN_IP"
-    printf "VPN port:          %s\n" "$VPN_PORT"
-    printf "Key size:          %s\n" "$KEY_SIZE"
-    printf "Server name:       %s\n" "$SERVER_NAME"
-    printf "Client names:      "
-    for i in "${CLIENT_NAMES[@]}"; do
-        printf "%s  " "$i"
-    done
-    printf "\n\n"
+printConfig
