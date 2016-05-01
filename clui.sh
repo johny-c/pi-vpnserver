@@ -1,30 +1,26 @@
-#!/bin/sh
+#!/bin/bash
 
 ## This script guides the user through the overall procedure
 
 # Raspberry-Pi-OVPN-Server
-$tutorial_URL="readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing/"
-printf "This program follows the instructions from %s." $tutorial_URL
+tutorial_URL="readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing/"
+printf "This program follows the instructions from: %s.\n\n" "$tutorial_URL"
 
 # First change your password
-printf "It is highly recommended to change your pi's default password before doing anything else"
-printf "Do you wish to change your password (y/n)?"
+printf "It is highly recommended to change your pi's default password before doing anything else.\n"
 ans='a'
-while [ $ans!='y' && $ans!='n' ]; do
-    printf "Do you wish to change your password (y/n)?"
+while [ $ans != 'y' -a $ans != 'n' ]; do
+    printf "Do you wish to change your password (y/n)?\n"
     read ans
+    printf "You typed %s\n" $ans
 done
-if [ $ans=='y' ]; then
+if [ $ans == 'y' ]; then
     sudo passwd
 fi
 
-# Set the main working directory for our VPN setup
-export DDIR=$( dirname "$(readlink -f "$0")" )
-export ERDIR="/etc/openvpn/easy-rsa"
-
 ## Setup variables
 ans='y'
-while [ $ans=='y' ]; do
+while [ $ans == 'y' ]; do
     ./setupVars.sh
 
     ## Print setup
@@ -39,16 +35,16 @@ while [ $ans=='y' ]; do
     printf "Server name:       %s" $SERVER_NAME
     printf "Client names:      %s" $CLIENT_NAMES
     ans='a'
-    while [ $ans!='y' && $ans!='n' ]; do
-        printf "Do you wish to change your configuration? (y/n)"
+    while [ $ans != 'y' && $ans != 'n' ]; do
+        printf "Do you wish to change your configuration? (y/n)\n"
         read ans
     done
 done
 
-printf "Your configuration is set. Now setting up the vpn server..."
+printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh
 
-printf "Your VPN server is set. Now setting up the clients..."
+printf "Your VPN server is set. Now setting up the clients...\n"
 ./setupVPNclient.sh
 
-printf "You are done! Just copy the [client].ovpn files to the actual clients!"
+printf "You are done! Just copy the [client].ovpn files to the actual clients!\n"

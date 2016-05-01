@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Raspberry-Pi-OVPN-Server
 printf "Setting up Raspberry Pi as an openVPN server!"
 

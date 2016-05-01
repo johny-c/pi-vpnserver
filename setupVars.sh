@@ -1,5 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 ## Configuration variables to automate the VPN setup
+
+# Set the main working directory for our VPN setup
+export DDIR=$( dirname "$(readlink -f "$0")" )
+export ERDIR="/etc/openvpn/easy-rsa"
 
 ## Set some default values
 

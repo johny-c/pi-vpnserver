@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 ## VPN Client(s) Setup
 
 ## Download the default file and update settings
 #- Set the Public IP or DDNS name in the Default.txt file
-cp $DDIR/Default.txt $ERDIR/keys 
+cp $DDIR/Default.txt $ERDIR/keys
 
 ## Get the script to generate the client files
-cp $DDIR/makeOVPN.sh $ERDIR/keys 
+cp $DDIR/makeOVPN.sh $ERDIR/keys
 
 ## Set permissions for the file
 chmod 700 $ERDIR/makeOVPN.sh
@@ -18,8 +18,3 @@ chmod 700 $ERDIR/makeOVPN.sh
 for i in ${CLIENT_NAMES[@]}; do
     ./makeOVPN.sh ${i}
 done
-
-
-
-
-
