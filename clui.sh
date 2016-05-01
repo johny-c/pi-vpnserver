@@ -12,7 +12,6 @@ ans='a'
 while [ $ans != 'y' -a $ans != 'n' ]; do
     printf "Do you wish to change your password (y/n)?\n"
     read ans
-    printf "You typed %s\n" $ans
 done
 if [ $ans == 'y' ]; then
     sudo passwd
@@ -38,7 +37,7 @@ while [ $ans == 'y' ]; do
     done
 done
 
-printConfig
+print_config
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh
@@ -46,4 +45,4 @@ printf "Your configuration is set. Now setting up the vpn server...\n"
 printf "Your VPN server is set. Now setting up the clients...\n"
 ./setupVPNclients.sh
 
-printf "You are done! Just copy the [client].ovpn files to the actual clients!\n"
+printf "You are done! Just copy the [client].ovpn files to the actual client devices!\n"

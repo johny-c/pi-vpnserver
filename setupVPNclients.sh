@@ -9,12 +9,10 @@ cp $DDIR/Default.txt $ERDIR/keys
 cp $DDIR/makeOVPN.sh $ERDIR/keys
 
 ## Set permissions for the file
-chmod 700 $ERDIR/makeOVPN.sh
+cd $ERDIR/keys
+chmod 700 makeOVPN.sh
 
 ##run the file and enter your server / client details
-#- enter [vpn_username] when prompted
-#- export the [vpn_username].ovpn file to clients
-
 for i in ${CLIENT_NAMES[@]}; do
     ./makeOVPN.sh ${i}
 done

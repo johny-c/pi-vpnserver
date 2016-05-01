@@ -13,7 +13,7 @@ function read_input {
     fi
 }
 
-function printConfig {
+function print_config {
     ## Print setup
     printf "Done! This is your configuration:\n\n"
     printf "Network interface: %s\n" "$IFACE_TYPE"

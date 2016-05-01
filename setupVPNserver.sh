@@ -20,12 +20,12 @@ cp /usr/share/easy-rsa $ERDIR
 #- change line export EASY_RSA to
 #*export EASY_RSA="/etc/openvpn/easy-rsa"*
 fnew=$ERDIR/vars
-forig=/usr/share/easy-rsa/vars
+forig="/usr/share/easy-rsa/vars"
 lineold=$(cat $forig | grep "export EASY_RSA")
 linenew="export EASY_RSA=$ERDIR"
-sed -i -- 's/lineold/linenew/g' $fnew
+sed -i -- "s/$lineold/$linenew/g" $fnew
 
-## Continue with regular procedure
+## Build certificate authority
 cd $ERDIR
 source ./vars
 ./clean-all
@@ -36,30 +36,26 @@ source ./vars
 #- challenge password must be left blank
 ./build-key-server $SERVER_NAME
 
-
 ## Build the key for your server, enter a vpn username
 #- challenge password must be left blank
 for CLIENT_NAME in "${CLIENT_NAMES[@]}"; do
-    cd $ERDIR
     ./build-key-pass $CLIENT_NAME
-    cd $ERDIR/keys
-    openssl rsa -in $CLIENT_NAME.key -des3 -out $CLIENT_NAME.3des.key
+    openssl rsa -in keys/$CLIENT_NAME.key -des3 -out keys/$CLIENT_NAME.3des.key
 done
 
-cd $ERDIR
-printf "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)..."
-printf "Running Diffie-Hellman algorithm . . ."
+printf "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)...\n"
+printf "Running Diffie-Hellman algorithm . . .\n"
 ./build-dh
-printf "DH algorithm finished!\n"
+printf "\nDH algorithm finished!\n"
 
 # Generate static key for TLS auth
-printf "Generating static key to avoid DDoS attacks..."
+printf "Generating static key to avoid DDoS attacks...\n"
 openvpn --genkey --secret keys/ta.key
 printf "Done.\n"
 
 ## Get the server.conf file and update it to your local settings
 #cd /etc/openvpn
-printf "Copying server.conf to /etc/openvpn"
+printf "Copying server.conf to /etc/openvpn\n"
 cp $DDIR/server.conf /etc/openvpn/
 
 ## Enable ipv4 forwarding
@@ -68,7 +64,7 @@ cp $DDIR/server.conf /etc/openvpn/
 printf "Uncommenting line to enable packet forwarding in /etc/sysctl.conf"
 newline="net.ipv4.ip_forward=1"
 oldline="#$newline"
-sed -i -- 's/$oldline/$newline/g' /etc/sysctl.conf
+sed -i -- "s/$oldline/$newline/g" /etc/sysctl.conf
 #nano /etc/sysctl.conf
 sysctl -p
 
@@ -77,7 +73,7 @@ sysctl -p
 #cd /etc
 #wget https://github.com/bicklp/pi-vpnserver/blob/master/firewall-openvpn-rules.sh
 printf "Copying firewall-openvpn-rules to /etc"
-cp $DDIR/firewall-openvpn-rules.sh /etc/
+cp $DDIR/firewall-openvpn-rules.sh $fwrul
 
 
 ## Update your interface file
@@ -85,7 +81,7 @@ cp $DDIR/firewall-openvpn-rules.sh /etc/
 printf "Updating $netif with firewall-openvpn-rules"
 oldline=$(cat $netif | grep "iface $IFACE_TYPE inet ")
 newline="$oldline\tpre-up $fwrul"
-sed -i -- 's/$oldline/$newline/g' $netif
+sed -i -- "s/$oldline/$newline/g" $netif
 
 ## Reboot the server
 printf "Server should be set up now!"
