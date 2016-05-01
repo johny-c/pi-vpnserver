@@ -25,7 +25,7 @@ read_input(){
     question="$1"
     default="$2"
     q="$1 ($2)? "
-    read -rp "$q" ans
+    read -p "$q" ans
 
     if [ -n "$ans" ]; then
         printf '%s' "$ans"
@@ -41,6 +41,7 @@ printf "Press enter to keep the default choice.\n"
 
 # Set network interface
 IFACE_TYPE=$( read_input "Use eth0 or wlan0 network interface" $IFACE_TYPE )
+printf "You said iface= %s\n" "$IFACE_TYPE"
 
 # Set server local ip
 SERVER_LOCAL_IP=$(ip addr show $IFACE_TYPE | grep "inet" | grep -v "inet6" | awk '{print $2}' | cut -d '/' -f 1)
@@ -93,3 +94,20 @@ export KEY_SIZE=$KEY_SIZE
 export SERVER_NAME=$SERVER_NAME
 export CLIENT_NAMES=$CLIENT_NAMES
 
+
+
+    ## Print setup
+    printf "Done! This is your configuration:\n\n"
+    printf "Network interface: %s\n" "$IFACE_TYPE"
+    printf "Local IP:          %s\n" "$SERVER_LOCAL_IP"
+    printf "Public IP:         %s\n" "$SERVER_PUBLIC_IP"
+    printf "Gateway IP:        %s\n" "$GATEWAY_IP"
+    printf "Local subnet IP:   %s\n" "$LAN_IP"
+    printf "VPN port:          %s\n" "$VPN_PORT"
+    printf "Key size:          %s\n" "$KEY_SIZE"
+    printf "Server name:       %s\n" "$SERVER_NAME"
+    printf "Client names:      "
+    for i in "${CLIENT_NAMES[@]}"; do
+        printf "%s  " "$i"
+    done
+    printf "\n\n"
