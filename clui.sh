@@ -25,17 +25,17 @@ while [ $ans == 'y' ]; do
 
     ## Print setup
     printf "This is your configuration:\n\n"
-    printf "Network interface: %s" $IFACE_TYPE
-    printf "Local IP:          %s" $SERVER_LOCAL_IP
-    printf "Public IP:         %s" $SERVER_PUBLIC_IP
-    printf "Gateway IP:        %s" $GATEWAY_IP
-    printf "Local subnet IP:   %s" $LAN_IP
-    printf "VPN port:          %s" $VPN_PORT
-    printf "Key size:          %s" $KEY_SIZE
-    printf "Server name:       %s" $SERVER_NAME
-    printf "Client names:      %s" $CLIENT_NAMES
+    printf "Network interface: %s\n" $IFACE_TYPE
+    printf "Local IP:          %s\n" $SERVER_LOCAL_IP
+    printf "Public IP:         %s\n" $SERVER_PUBLIC_IP
+    printf "Gateway IP:        %s\n" $GATEWAY_IP
+    printf "Local subnet IP:   %s\n" $LAN_IP
+    printf "VPN port:          %s\n" $VPN_PORT
+    printf "Key size:          %s\n" $KEY_SIZE
+    printf "Server name:       %s\n" $SERVER_NAME
+    printf "Client names:      %s\n" $CLIENT_NAMES
     ans='a'
-    while [ $ans != 'y' && $ans != 'n' ]; do
+    while [ $ans != 'y' -a $ans != 'n' ]; do
         printf "Do you wish to change your configuration? (y/n)\n"
         read ans
         printf "You typed %s\n" $ans

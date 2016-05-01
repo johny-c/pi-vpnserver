@@ -67,7 +67,7 @@ SERVER_NAME=$( read_input "Pick a name for your server" $SERVER_NAME )
 
 new_client=1
 i=0
-while [ test $new_client -gt 0 ]; do
+while [ $new_client -gt 0 ]; do
     printf "Pick a name for your client no %d or leave blank to stop adding clients." $i+1
     read CLIENT_NAME
 
