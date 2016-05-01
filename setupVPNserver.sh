@@ -1,6 +1,6 @@
 #!/bin/sh
 # Raspberry-Pi-OVPN-Server
-echo Setting up Raspberry Pi as an openVPN server!
+printf "Setting up Raspberry Pi as an openVPN server!"
 
 ## Update the Server
 sudo -s
@@ -16,7 +16,7 @@ cp /usr/share/easy-rsa /etc/openvpn/easy-rsa
 #- change line export EASY_RSA to
 #*export EASY_RSA="/etc/openvpn/easy-rsa"*
 $fnew=$ERDIR/vars
-$forig=/usr/share/easy-rsa/vars 
+$forig=/usr/share/easy-rsa/vars
 $lineold=$(cat $forig | grep "export EASY_RSA")
 $linenew="export EASY_RSA=$ERDIR"
 sed -i -- 's/lineold/linenew/g' $fnew
@@ -38,25 +38,25 @@ source ./vars
 cd $ERDIR/keys
 openssl rss -in ($CLIENT_NAME).key -des3 -out ($CLIENT_NAME).3des.key
 cd $ERDIR
-echo "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)..."
-echo Running Diffie-Hellman algorithm
+printf "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)..."
+printf "Running Diffie-Hellman algorithm . . ."
 ./build-dh
-echo DH algorithm finished!
+printf "DH algorithm finished!\n"
 
 # Generate static key for TLS auth
-echo Generating static key to avoid DDoS attacks...
+printf "Generating static key to avoid DDoS attacks..."
 openvpn --genkey --secret keys/ta.key
-echo Done.
+printf "Done.\n"
 
 ## Get the server.conf file and update it to your local settings
 #cd /etc/openvpn
-echo Copying server.conf to /etc/openvpn
+printf "Copying server.conf to /etc/openvpn"
 cp $DDIR/server.conf /etc/openvpn/
 
-## Enable ipv4 forwarding 
+## Enable ipv4 forwarding
 #- uncomment the line
 #*net.ipv4.ip_forward=1*
-echo Uncommenting line to enable packet forwarding in /etc/sysctl.conf
+printf "Uncommenting line to enable packet forwarding in /etc/sysctl.conf"
 $newline="net.ipv4.ip_forward=1"
 $oldline="#$newline"
 sed -i -- 's/$oldline/$newline/g' /etc/sysctl.conf
@@ -67,20 +67,19 @@ sysctl -p
 #- update file to your local settings and IPs etc
 #cd /etc
 #wget https://github.com/bicklp/pi-vpnserver/blob/master/firewall-openvpn-rules.sh
-echo Copying firewall-openvpn-rules to /etc
+printf "Copying firewall-openvpn-rules to /etc"
 cp $DDIR/firewall-openvpn-rules.sh /etc/
 
 
 ## Update your interface file
 #- add line to interfaces file with a tab at the beginning
-echo Updating /etc/network/interfaces with firewall-openvpn-rules
+printf "Updating /etc/network/interfaces with firewall-openvpn-rules"
 $oldline=$(cat /etc/network/interfaces | grep "iface $IFACE_TYPE inet ")
 $newline="$oldline\tpre-up /etc/firewall-openvpn-rules.sh"
 sed -i -- 's/$oldline/$newline/g' /etc/networks/interfaces
 
 ## Reboot the server
-echo Server should be set up now! 
-echo "You still have to set up the client(s)"
-echo Now rebooting...
-echo ""
+printf "Server should be set up now!"
+printf "You still have to set up the client(s)"
+printf "Now rebooting...\n"
 reboot
