@@ -23,6 +23,8 @@ export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 
 ## Source utility functions
 . $DDIR/utils.sh
+export -f read_input
+export -f print_config
 
 ## Setup variables
 ans='y'
