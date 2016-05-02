@@ -3,14 +3,14 @@
 
 sudo -s
 ## Download the default file and update settings
-#- Set the Public IP or DDNS name in the Default.txt file
+printf "Copying Default.txt to %s.\n
+        You may want to set your DDNS name or public IP" "$ERDIR/keys"
 cp $DDIR/Default.txt $ERDIR/keys
 fpath=$ERDIR/keys/Default.txt
-SERVER_PUBLIC_IP=$(read_from_yaml $CFG_FILE "SERVER_PUBLIC_IP")
-VPN_PORT=$(read_from_yaml $CFG_FILE "VPN_PORT")
-sed -i -- "s/[SERVER_PUBLIC_IP]/$SERVER_PUBLIC_IP/g" $fpath
-sed -i -- "s/[VPN_PORT]/$VPN_PORT/g" $fpath
-
+for key in (SERVER_PUBLIC_IP VPN_PORT); do
+    val=$(read_from_yaml $CFG_FILE $key)
+    sed -i -- "s/[$key]/$val/g" $fpath
+done
 
 ## Get the script to generate the client files
 cp $DDIR/makeOVPN.sh $ERDIR/keys
