@@ -53,11 +53,3 @@ function write_to_yaml {
         echo "$newline" >> $fpath
     fi
 }
-
-function yget {
-    read_from_yaml vpn_config.yaml $1
-}
-
-function yput {
-    write_to_yaml vpn_config.yaml $1 $2
-}

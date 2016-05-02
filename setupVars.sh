@@ -1,7 +1,7 @@
 #!/bin/bash
 ## Configuration variables to automate the VPN setup
 
-## Variables names
+## Variables associative array
 declare -A MY_VARS
 MY_VARS=( [SERVER_LOCAL_IP]="192.168.1.2" [SERVER_PUBLIC_IP]="123.111.123.111"
           [LAN_IP]="192.168.1.0" [GATEWAY_IP]="192.168.1.1" [KEY_SIZE]=2048
@@ -45,6 +45,10 @@ MY_VARS[VPN_PORT]=$( read_input "Pick a port allowing VPN connections on your se
 MY_VARS[KEY_SIZE]=$( read_input "Choose authentication key size" ${MY_VARS[KEY_SIZE]} )
 MY_VARS[SERVER_NAME]=$( read_input "Pick a name for your server" ${MY_VARS[SERVER_NAME]} )
 
+printf "\nThese are your clients currently:\n"
+for CLIENT_NAME in ${CLIENT_NAMES[@]}; do
+    printf "%s  " $CLIENT_NAME
+done
 new_client=1
 i=0
 while [ $new_client -gt 0 ]; do
@@ -54,7 +58,8 @@ while [ $new_client -gt 0 ]; do
     printf "You typed %s\n" "$CLIENT_NAME"
     if [ -n "$CLIENT_NAME" ]; then
         CLIENT_NAMES+=("$CLIENT_NAME")
-	i=$(expr $i + 1)
+	    i=$(expr $i + 1)
+        printf "Added client %s\n" $CLIENT_NAME
     else
         new_client=0
     fi

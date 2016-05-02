@@ -50,4 +50,4 @@ printf "Your configuration is set. Now setting up the vpn server...\n"
 printf "Your VPN server is set. Now setting up the clients...\n"
 ./setupVPNclients.sh
 
-printf "You are done! Just copy the [client].ovpn files to the actual client devices!\n"
+printf "You are done! Now copy the [client].ovpn files to the actual client devices!\n"
