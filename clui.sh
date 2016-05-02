@@ -1,12 +1,11 @@
 #!/bin/bash
-
 ## This script guides the user through the overall procedure
 
-# Raspberry-Pi-OVPN-Server
+## Raspberry-Pi-OVPN-Server
 tutorial_URL="readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing/"
 printf "This program follows the instructions from: %s.\n\n" "$tutorial_URL"
 
-# First change your password
+## First change your password
 printf "It is highly recommended to change your pi's default password before doing anything else.\n"
 ans='a'
 while [ $ans != 'y' -a $ans != 'n' ]; do
@@ -17,29 +16,33 @@ if [ $ans == 'y' ]; then
     sudo passwd
 fi
 
-# Set the main working directory for our VPN setup
+## Set the main working directory for our VPN setup
 export DDIR=$( dirname "$(readlink -f "$0")" )
 export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
+export CFG_FILE="$DDIR/vpn_config.yaml"
+export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 
-## Source utility functions
-. $DDIR/utils.sh
-export -f read_input
-export -f print_config
+## Create vpn_config.yaml if it does not exist
+if [ ! -e $CFG_FILE ]; then
+    cp $CFG_FILE_DEFAULT $CFG_FILE
+fi
 
 ## Setup variables
 ans='y'
 while [ $ans == 'y' ]; do
-    ./setupVars.sh
+    printf "This is your configuration:\n\n"
+    cat $CFG_FILE
 
     ans='a'
     while [ $ans != 'y' -a $ans != 'n' ]; do
         printf "Do you wish to change your configuration? (y/n)\n"
         read ans
-        printf "You typed %s\n" $ans
     done
-done
 
-print_config
+    if [ $ans == 'y' ]; then
+        ./setupVars.sh
+    fi
+done
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh

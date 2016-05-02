@@ -12,7 +12,9 @@ cp $DDIR/makeOVPN.sh $ERDIR/keys
 cd $ERDIR/keys
 chmod 700 makeOVPN.sh
 
-##run the file and enter your server / client details
+. $DDIR/utils.sh
+CLIENT_NAMES=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
+## Run the file and enter your server / client details
 for i in ${CLIENT_NAMES[@]}; do
     ./makeOVPN.sh ${i}
 done

@@ -1,2 +1,3 @@
 /test
-testfile
+test*
+.tags*

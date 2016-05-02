@@ -31,8 +31,33 @@ function print_config {
     printf "\n\n"
 }
 
-function read_yaml {
-    filepath="$1"
-    
-    printf "$infomap"
+function read_from_yaml {
+    fpath="$1"
+    key="$2"
+    value=$(grep $key $fpath | cut -d : -f 2)
+    #printf "Read from %s that %s = %s\n" $fpath $key $value
+    printf "%s" $value
+}
+
+function write_to_yaml {
+    fpath="$1"
+    key="$2"
+    value="$3"
+    newline="$key: $value"
+
+    var_exists=$(grep $key $fpath | wc -l)
+    if [ $var_exists -gt 0 ]; then
+        oldline=$(grep $key $fpath)
+        sed -i -- "s/$oldline/$newline/g" $fpath
+    else
+        echo "$newline" >> $fpath
+    fi
+}
+
+function yget {
+    read_from_yaml vpn_config.yaml $1
+}
+
+function yput {
+    write_to_yaml vpn_config.yaml $1 $2
 }
