@@ -1,0 +1,10 @@
+vpn_vars:
+    IFACE_TYPE:       'eth0'
+    SERVER_LOCAL_IP:  '192.168.1.2'
+    SERVER_PUBLIC_IP: '123.123.123.123'
+    GATEWAY_IP:       '192.168.1.1'
+    LAN_IP:           '192.168.1.0'
+    VPN_PORT:         1194
+    KEY_SIZE:         2048
+    SERVER_NAME:      'vpn_server'
+    CLIENT_NAMES:     ['vpn_client1', 'vpn_client2']

@@ -30,3 +30,9 @@ function print_config {
     done
     printf "\n\n"
 }
+
+function read_yaml {
+    filepath="$1"
+    
+    printf "$infomap"
+}
