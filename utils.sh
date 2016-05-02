@@ -15,7 +15,7 @@ function read_input {
 
 function print_config {
     ## Print setup
-    printf "Done! This is your configuration:\n\n"
+    printf "This is your configuration:\n\n"
     printf "Network interface: %s\n" "$IFACE_TYPE"
     printf "Local IP:          %s\n" "$SERVER_LOCAL_IP"
     printf "Public IP:         %s\n" "$SERVER_PUBLIC_IP"

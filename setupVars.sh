@@ -1,22 +1,7 @@
 #!/bin/bash
 ## Configuration variables to automate the VPN setup
 
-## Set some default values
-
-# Network variables
-SERVER_LOCAL_IP="192.168.1.5"
-SERVER_PUBLIC_IP="123.456.789.123"
-LAN_IP="192.168.1.0"
-GATEWAY_IP="192.168.1.1"
-
-# User variables
-KEY_SIZE=2048
-VPN_PORT=1194
-IFACE_TYPE="eth0" # set to wlan0 for wireless server
-SERVER_NAME="my_vpn_server"
-CLIENT_NAMES=("vpn_client1" "vpn_client2")
-
-. $DDIR/utils.sh
+var_names=('SERVER_LOCAL_IP' 'SERVER_PUBLIC_IP' 'LAN_IP' 'GATEWAY_IP' 'KEY_SIZE' 'VPN_PORT' 'IFACE_TYPE' 'SERVER_NAME' 'CLIENT_NAMES')
 
 ## Setup network variables
 printf "Trying to figure out your network configuration . . ."
@@ -24,7 +9,6 @@ printf "Press enter to keep the default choice.\n"
 
 # Set network interface
 IFACE_TYPE=$( read_input "Use eth0 or wlan0 network interface" $IFACE_TYPE )
-printf "You said iface= %s\n" "$IFACE_TYPE"
 
 # Set server local ip
 SERVER_LOCAL_IP=$(ip addr show $IFACE_TYPE | grep "inet" | grep -v "inet6" | awk '{print $2}' | cut -d '/' -f 1)
@@ -66,15 +50,6 @@ while [ $new_client -gt 0 ]; do
     fi
 done
 
-## Make variables available to subprocesses
-export IFACE_TYPE="$IFACE_TYPE"
-export SERVER_LOCAL_IP=$SERVER_LOCAL_IP
-export SERVER_PUBLIC_IP=$SERVER_PUBLIC_IP
-export GATEWAY_IP=$GATEWAY_IP
-export LAN_IP=$LAN_IP
-export VPN_PORT=$VPN_PORT
-export KEY_SIZE=$KEY_SIZE
-export SERVER_NAME=$SERVER_NAME
-export CLIENT_NAMES=$CLIENT_NAMES
-
+source $DDIR/vpn_config.sh
+source $DDIR/utils.sh
 printConfig

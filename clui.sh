@@ -22,14 +22,12 @@ export DDIR=$( dirname "$(readlink -f "$0")" )
 export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 
 ## Source utility functions
-. $DDIR/utils.sh
-export -f read_input
-export -f print_config
+source $DDIR/utils.sh
 
 ## Setup variables
 ans='y'
 while [ $ans == 'y' ]; do
-    ./setupVars.sh
+    print_config
 
     ans='a'
     while [ $ans != 'y' -a $ans != 'n' ]; do
