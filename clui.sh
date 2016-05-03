@@ -30,7 +30,6 @@ fi
 ## Setup variables
 ans='y'
 while [ $ans == 'y' ]; do
-    print_config
     printf "This is your configuration:\n\n"
     cat $CFG_FILE
 

@@ -19,7 +19,6 @@ printf "Trying to figure out your network configuration . . .\n"
 printf "Press enter to keep the default choice.\n"
 
 # Set network interface
-IFACE_TYPE=$( read_input "Use eth0 or wlan0 network interface" $IFACE_TYPE )
 MY_VARS[IFACE_TYPE]=$( read_input "Use eth0 or wlan0 network interface" ${MY_VARS[IFACE_TYPE]} )
 
 # Set server local ip
