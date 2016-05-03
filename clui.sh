@@ -22,8 +22,6 @@ export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 export CFG_FILE="$DDIR/vpn_config.yaml"
 export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 
-## Source utility functions
-source $DDIR/utils.sh
 ## Create vpn_config.yaml if it does not exist
 if [ ! -e $CFG_FILE ]; then
     cp $CFG_FILE_DEFAULT $CFG_FILE

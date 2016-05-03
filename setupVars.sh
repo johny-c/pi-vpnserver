@@ -1,7 +1,6 @@
 #!/bin/bash
 ## Configuration variables to automate the VPN setup
 
-var_names=('SERVER_LOCAL_IP' 'SERVER_PUBLIC_IP' 'LAN_IP' 'GATEWAY_IP' 'KEY_SIZE' 'VPN_PORT' 'IFACE_TYPE' 'SERVER_NAME' 'CLIENT_NAMES')
 ## Variables associative array
 declare -A MY_VARS
 MY_VARS=( [SERVER_LOCAL_IP]="192.168.1.2" [SERVER_PUBLIC_IP]="123.111.123.111"
