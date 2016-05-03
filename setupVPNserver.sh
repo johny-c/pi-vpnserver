@@ -11,7 +11,7 @@ apt-get update
 apt-get upgrade
 
 ## Install the software
-apt-get install openvpn easy-rsa curl
+apt-get install openvpn easy-rsa curl python-yaml
 mkdir $ERDIR
 cp /usr/share/easy-rsa $ERDIR
 

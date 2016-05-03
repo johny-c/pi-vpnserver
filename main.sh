@@ -22,29 +22,24 @@ export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 export CFG_FILE="$DDIR/vpn_config.yaml"
 export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 
-## Create vpn_config.yaml if it does not exist
+## Create vpn_config.yaml if it does not exist and change permissions
 if [ ! -e $CFG_FILE ]; then
     cp $CFG_FILE_DEFAULT $CFG_FILE
 fi
 chmod 600 $CFG_FILE_DEFAULT
 chmod 600 $CFG_FILE
 
-## Setup variables
-ans='y'
-while [ $ans == 'y' ]; do
-    printf "This is your configuration:\n\n"
-    cat $CFG_FILE
+## Install software
+sudo apt-get install python3-pip
+sudo apt-get install python-netifaces
+sudo pip3 install netifaces --upgrade
+sudo pip3 install requests --upgrade
+sudo apt-get install python3-yaml
+sudo apt-get install python3-netifaces
 
-    ans='a'
-    while [ $ans != 'y' -a $ans != 'n' ]; do
-        printf "Do you wish to change your configuration? (y/n)\n"
-        read ans
-    done
-
-    if [ $ans == 'y' ]; then
-        ./setupVars.sh
-    fi
-done
+## Setup configuration variables
+printf "First we have to setup your configuration.\n"
+python3 setup_vars.py
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh
