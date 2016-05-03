@@ -36,3 +36,10 @@ function write_to_yaml {
         echo "$newline" >> $fpath
     fi
 }
+
+
+function trim {
+    local FOO="$*"
+    FOO_NO_EXTERNAL_SPACE="$(echo -e "${FOO}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    printf "%s" $FOO_NO_EXTERNAL_SPACE
+}

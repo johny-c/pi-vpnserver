@@ -12,7 +12,7 @@ MY_VARS=( [SERVER_LOCAL_IP]="192.168.1.2" [SERVER_PUBLIC_IP]="123.111.123.111"
 for key in ${!MY_VARS[@]}; do
     MY_VARS[$key]=$(read_from_yaml $CFG_FILE $key)
 done
-CLIENT_NAMES=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
+
 
 ## Setup network variables
 printf "Trying to figure out your network configuration . . .\n"
@@ -45,17 +45,21 @@ MY_VARS[VPN_PORT]=$( read_input "Pick a port allowing VPN connections on your se
 MY_VARS[KEY_SIZE]=$( read_input "Choose authentication key size" ${MY_VARS[KEY_SIZE]} )
 MY_VARS[SERVER_NAME]=$( read_input "Pick a name for your server" ${MY_VARS[SERVER_NAME]} )
 
-printf "\nThese are your clients currently:\n"
-for CLIENT_NAME in ${CLIENT_NAMES[@]}; do
-    printf "%s  " $CLIENT_NAME
-done
+## Read clients
+STR=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
+STR=$(trim $STR)         # Remove leading and trailing whitespace
+STR="${STR:1:${#STR}-2}" # Remove first and last character
+CLIENT_NAMES=(`echo $STR | sed -e 's/,/\n/g'`)
+printf "\nThese are your clients:\n\n"
+for c in "${CLIENT_NAMES[@]}"; do printf "%s  " $c; done
+printf "\n\n"
+
 new_client=1
 i=0
 while [ $new_client -gt 0 ]; do
-    printf "Pick a name for your client no %d or leave blank to stop adding clients.\n" $(expr $i + 1)
+    printf "Pick a name for a new client or leave blank to stop adding clients.\n" $(expr $i + 1)
     read CLIENT_NAME
 
-    printf "You typed %s\n" "$CLIENT_NAME"
     if [ -n "$CLIENT_NAME" ]; then
         CLIENT_NAMES+=("$CLIENT_NAME")
 	    i=$(expr $i + 1)
@@ -65,8 +69,14 @@ while [ $new_client -gt 0 ]; do
     fi
 done
 
+printf "\nThese are your clients:\n\n"
+for c in "${CLIENT_NAMES[@]}"; do printf "%s  " $c; done
+printf "\n\n"
+
 ## Save new Configuration to yaml file
 for key in "${!MY_VARS[@]}"; do
     write_to_yaml $CFG_FILE $key ${MY_VARS[$key]}
 done
-write_to_yaml $CFG_FILE "CLIENT_NAMES" $CLIENT_NAMES
+
+cr=$( IFS=, ; echo "${CLIENT_NAMES[*]}" )
+write_to_yaml $CFG_FILE "CLIENT_NAMES" $cr

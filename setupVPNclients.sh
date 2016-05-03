@@ -19,8 +19,13 @@ cp $DDIR/makeOVPN.sh $ERDIR/keys
 cd $ERDIR/keys
 chmod 700 makeOVPN.sh
 
+## Read and parse clients names from file
 . $DDIR/utils.sh
-CLIENT_NAMES=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
+STR=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
+STR=$(trim $STR)         # Remove leading and trailing whitespace
+STR="${STR:1:${#STR}-2}" # Remove first and last character
+CLIENT_NAMES=(`echo $STR | sed -e 's/,/\n/g'`)
+
 ## Run the file and enter your server / client details
 for CLIENT_NAME in ${CLIENT_NAMES[@]}; do
     ./makeOVPN.sh ${CLIENT_NAME}

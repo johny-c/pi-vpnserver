@@ -6,4 +6,4 @@ LAN_IP:           '192.168.1.0'
 VPN_PORT:         1194
 KEY_SIZE:         2048
 SERVER_NAME:      'vpn_server'
-CLIENT_NAMES:     ['vpn_client1', 'vpn_client2']
+CLIENT_NAMES:     {'vpn_client1', 'vpn_client2'}

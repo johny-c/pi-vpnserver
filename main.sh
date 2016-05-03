@@ -26,6 +26,8 @@ export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 if [ ! -e $CFG_FILE ]; then
     cp $CFG_FILE_DEFAULT $CFG_FILE
 fi
+chmod 600 $CFG_FILE_DEFAULT
+chmod 600 $CFG_FILE
 
 ## Setup variables
 ans='y'
