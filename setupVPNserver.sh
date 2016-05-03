@@ -58,7 +58,7 @@ printf "Done.\n"
 printf "Copying server.conf to /etc/openvpn\n"
 cp $DDIR/server.conf /etc/openvpn/
 fpath=/etc/openvpn/server.conf
-for key in (SERVER_LOCAL_IP VPN_PORT SERVER_NAME KEY_SIZE LAN_IP GATEWAY_IP); do
+for key in SERVER_LOCAL_IP VPN_PORT SERVER_NAME KEY_SIZE LAN_IP GATEWAY_IP; do
     val=$(read_from_yaml $CFG_FILE $key)
     sed -i -- "s/[$key]/$val/g" $fpath
 done
@@ -74,7 +74,7 @@ sysctl -p
 printf "Copying firewall-openvpn-rules to /etc .\n"
 cp $DDIR/firewall-openvpn-rules.sh $fwrul
 
-for key in (SERVER_LOCAL_IP IFACE_TYPE); do
+for key in SERVER_LOCAL_IP IFACE_TYPE; do
     val=$(read_from_yaml $CFG_FILE $key)
     sed -i -- "s/[$key]/$val/g" $fwrul
 done

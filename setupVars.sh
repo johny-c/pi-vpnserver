@@ -67,8 +67,6 @@ while [ $new_client -gt 0 ]; do
     fi
 done
 
-source $DDIR/vpn_config.sh
-source $DDIR/utils.sh
 ## Save new Configuration to yaml file
 for key in "${!MY_VARS[@]}"; do
     write_to_yaml $CFG_FILE $key ${MY_VARS[$key]}
