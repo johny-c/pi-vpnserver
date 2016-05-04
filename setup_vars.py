@@ -98,10 +98,6 @@ while editState:
             MY_VARS['CLIENT_NAMES'].add(client)
             print("Added client %s\n" % client )
 
-    print("These are your clients:")
-    for client in doc['CLIENT_NAMES']:
-        print("%s  " % client)
-
     ## Save new Configuration to yaml file
     with open(VARS_FILE, 'w') as outfile:
         outfile.write( yaml.dump(MY_VARS, default_flow_style=False) )
