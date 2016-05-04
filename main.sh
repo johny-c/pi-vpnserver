@@ -27,6 +27,7 @@ if [ ! -e $CFG_FILE ]; then
 fi
 chmod 600 $CFG_FILE_DEFAULT
 chmod 600 $CFG_FILE
+chmod 700 $DDIR/*.sh
 
 ## Install software to run this program
 sudo apt-get install python3-pip python3-yaml
