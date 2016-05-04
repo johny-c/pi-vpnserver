@@ -29,13 +29,14 @@ fi
 chmod 600 $CFG_FILE_DEFAULT
 chmod 600 $CFG_FILE
 
-## Install software
+## Install software to run this program
 sudo apt-get install python3-pip
 sudo apt-get install python-netifaces
 sudo pip3 install netifaces --upgrade
 sudo pip3 install requests --upgrade
 sudo apt-get install python3-yaml
 sudo apt-get install python3-netifaces
+sudo apt-get install openvpn easy-rsa curl
 
 ## Setup configuration variables
 printf "First we have to setup your configuration.\n"

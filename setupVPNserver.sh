@@ -10,8 +10,8 @@ sudo -s
 apt-get update
 apt-get upgrade
 
-## Install the software
-apt-get install openvpn easy-rsa curl python-yaml
+## Install the software to build and run the VPN server
+apt-get install openvpn easy-rsa curl python3-yaml
 mkdir $ERDIR
 cp /usr/share/easy-rsa $ERDIR
 
@@ -31,7 +31,7 @@ source ./vars
 
 ## Build key for your server, name your server here
 SERVER_NAME=$(read_from_yaml $CFG_FILE "SERVER_NAME")
-printf "Now building the server key.\n
+printf "Now building the key.server\n
         Common name must be the same as the server name (%s)\n
         Leave the challenge password blank.\n" $SERVER_NAME
 ./build-key-server $SERVER_NAME
@@ -73,7 +73,6 @@ sysctl -p
 ## Update firewall rules file to your local settings and IPs etc
 printf "Copying firewall-openvpn-rules to /etc .\n"
 cp $DDIR/firewall-openvpn-rules.sh $fwrul
-
 for key in SERVER_LOCAL_IP IFACE_TYPE; do
     val=$(read_from_yaml $CFG_FILE $key)
     sed -i -- "s/[$key]/$val/g" $fwrul
@@ -89,6 +88,7 @@ sed -i -- "s/$oldline/$newline/g" $netif
 
 ## Reboot the server
 printf "Server should be good to go now!\n"
-printf "You still have to set up the client(s)\n"
+printf "You still have to set up the client(s) -> ./setupVPNclients.sh\n"
 printf "Now rebooting...\n"
+sleep 5
 reboot
