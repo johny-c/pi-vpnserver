@@ -1,6 +1,5 @@
 #!/bin/bash
 ## This script guides the user through the overall procedure
-
 ## Raspberry-Pi-OVPN-Server
 tutorial_URL="readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing/"
 printf "This program follows the instructions from: %s.\n\n" "$tutorial_URL"
@@ -30,13 +29,11 @@ chmod 600 $CFG_FILE_DEFAULT
 chmod 600 $CFG_FILE
 
 ## Install software to run this program
-sudo apt-get install python3-pip
-sudo apt-get install python-netifaces
+sudo apt-get install python3-pip python3-yaml
+sudo apt-get install python-netifaces python3-netifaces
+sudo apt-get install openvpn easy-rsa curl
 sudo pip3 install netifaces --upgrade
 sudo pip3 install requests --upgrade
-sudo apt-get install python3-yaml
-sudo apt-get install python3-netifaces
-sudo apt-get install openvpn easy-rsa curl
 
 ## Setup configuration variables
 printf "First we have to setup your configuration.\n"
@@ -46,6 +43,6 @@ printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh
 
 printf "Your VPN server is set. Now setting up the clients...\n"
-./setupVPNclients.sh
+python3 setupVPNclients.py
 
 printf "You are done! Now copy the [client].ovpn files to the actual client devices!\n"

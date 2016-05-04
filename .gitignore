@@ -2,3 +2,4 @@
 test*
 .tags*
 vpn_config.yaml
+setupVPNclients.sh

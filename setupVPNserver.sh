@@ -2,16 +2,21 @@
 # Raspberry-Pi-OVPN-Server
 printf "Setting up Raspberry Pi as an openVPN server!\n"
 
-netif="/etc/network/interfaces"
-fwrul="/etc/firewall-openvpn-rules.sh"
-
 ## Update the Server
 sudo -s
 apt-get update
 apt-get upgrade
-
 ## Install the software to build and run the VPN server
 apt-get install openvpn easy-rsa curl python3-yaml
+
+## Set the main working directory for our VPN setup
+export DDIR=$( dirname "$(readlink -f "$0")" )
+export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
+export CFG_FILE="$DDIR/vpn_config.yaml"
+export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
+
+netif="/etc/network/interfaces"
+fwrul="/etc/firewall-openvpn-rules.sh"
 mkdir $ERDIR
 cp /usr/share/easy-rsa $ERDIR
 
@@ -36,13 +41,13 @@ printf "Now building the key.server\n
         Leave the challenge password blank.\n" $SERVER_NAME
 ./build-key-server $SERVER_NAME
 
-## Build the client keys for your server, enter a vpn username
-CLIENT_NAMES=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
-printf "Now building the client keys. Leave the challenge password blank."
-for CLIENT_NAME in "${CLIENT_NAMES[@]}"; do
-    ./build-key-pass $CLIENT_NAME
-    openssl rsa -in keys/$CLIENT_NAME.key -des3 -out keys/$CLIENT_NAME.3des.key
-done
+# ## Build the client keys for your server, enter a vpn username
+# CLIENT_NAMES=$(read_from_yaml $CFG_FILE "CLIENT_NAMES")
+# printf "Now building the client keys. Leave the challenge password blank."
+# for CLIENT_NAME in "${CLIENT_NAMES[@]}"; do
+#     ./build-key-pass $CLIENT_NAME
+#     openssl rsa -in keys/$CLIENT_NAME.key -des3 -out keys/$CLIENT_NAME.3des.key
+# done
 
 printf "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)...\n"
 printf "Running Diffie-Hellman algorithm . . .\n"
@@ -85,6 +90,26 @@ IFACE_TYPE=$(read_from_yaml $CFG_FILE "IFACE_TYPE")
 oldline=$(cat $netif | grep "iface $IFACE_TYPE inet ")
 newline="$oldline\tpre-up $fwrul"
 sed -i -- "s/$oldline/$newline/g" $netif
+
+
+## Setup also the client files
+## Download the default file and update settings
+printf "Copying Default.txt to %s.\n
+        You may want to set your DDNS name or public IP" "$ERDIR/keys"
+cp $DDIR/Default.txt $ERDIR/keys
+fpath=$ERDIR/keys/Default.txt
+for key in SERVER_PUBLIC_IP VPN_PORT; do
+    val=$(read_from_yaml $CFG_FILE $key)
+    sed -i -- "s/[$key]/$val/g" $fpath
+done
+
+## Get the script to generate the client files
+cp $DDIR/makeOVPN.sh $ERDIR/keys
+
+## Set permissions for the file
+cd $ERDIR/keys
+chmod 700 makeOVPN.sh
+
 
 ## Reboot the server
 printf "Server should be good to go now!\n"
