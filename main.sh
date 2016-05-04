@@ -46,4 +46,7 @@ printf "Your configuration is set. Now setting up the vpn server...\n"
 printf "Your VPN server is set. Now setting up the clients...\n"
 python3 setupVPNclients.py
 
+printf "Clients should be set up. Now rebooting...\n"
 printf "You are done! Now copy the [client].ovpn files to the actual client devices!\n"
+sleep 5
+reboot

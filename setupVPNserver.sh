@@ -110,10 +110,5 @@ cp $DDIR/makeOVPN.sh $ERDIR/keys
 cd $ERDIR/keys
 chmod 700 makeOVPN.sh
 
-
 ## Reboot the server
 printf "Server should be good to go now!\n"
-printf "You still have to set up the client(s) -> ./setupVPNclients.sh\n"
-printf "Now rebooting...\n"
-sleep 5
-reboot
