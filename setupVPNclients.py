@@ -3,8 +3,8 @@ import subprocess
 import yaml
 
 ## Execute commands in the shell
-def shell(cmdlist):
-    proc = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
+def shell(cmd):
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     for line in proc.stdout.readlines():
         print line.rstrip()
 
@@ -19,6 +19,10 @@ print("Here is your current configuration:\n")
 for k in cfg:
     print("%s : %s" % (k,cfg[k]) )
 
+## Enter into the right directory
+EASY_RSA_DIR = '/etc/openvpn/easy-rsa'
+shell(['cd', EASY_RSA_DIR])
+
 ## Build the client keys for your server, enter a vpn username
 print("Now building the client keys. Leave the challenge password blank.")
 for CLIENT_NAME in cfg['CLIENT_NAMES']:
@@ -26,6 +30,9 @@ for CLIENT_NAME in cfg['CLIENT_NAMES']:
     shell(['openssl', 'rsa', '-in', 'keys/' + str(CLIENT_NAME) + '.key', '-des3', '-out', 'keys/' + str(CLIENT_NAME) + '.3des.key'])
     #./build-key-pass CLIENT_NAME
     #openssl rsa -in keys/CLIENT_NAME.key -des3 -out keys/CLIENT_NAME.3des.key
+
+## Enter into the right directory
+shell(['cd', EASY_RSA_DIR + '/keys'])
 
 ## Run the file and enter your server / client details
 print("Now creating the client ovpn files...")
