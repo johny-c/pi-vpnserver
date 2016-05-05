@@ -1,5 +1,6 @@
-/test
-test*
+## Ignore these
+#test*
 .tags*
 vpn_config.yaml
 setupVPNclients.sh
+__pycache__

@@ -4,7 +4,7 @@ import netifaces as nif
 from requests import get
 import sys
 import os
-from setupVPNclients import setup_clients
+from setupVPNclients import set_names
 
 ## Get answer from user
 def read_input(question="", default=""):
@@ -83,7 +83,7 @@ while editState:
     MY_VARS['VPN_PORT']= read_input( "Pick a port allowing VPN connections on your server", str(cfg['VPN_PORT']) )
     MY_VARS['KEY_SIZE']= read_input( "Choose authentication key size", str(cfg['KEY_SIZE']) )
     MY_VARS['SERVER_NAME']= read_input( "Pick a name for your server", cfg['SERVER_NAME'] )
-    MY_VARS['CLIENT_NAMES'] = setup_clients(cfg['CLIENT_NAMES'])
+    MY_VARS['CLIENT_NAMES'] = set_names(cfg['CLIENT_NAMES'])
 
     ## Save new Configuration to yaml file
     with open(CFG_FILE, 'w') as outfile:

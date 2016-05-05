@@ -25,8 +25,8 @@ export ERDIR=$ETCDIR/openvpn/easy-rsa
 fwrules="firewall-openvpn-rules.sh"
 
 ## Create local copy of easy-rsa
-mkdir $ERDIR
-cp /usr/share/easy-rsa $ERDIR
+mkdir -p $ERDIR/keys
+cp -r /usr/share/easy-rsa $ERDIR
 
 ## Edit the vars file
 printf 'Editing the "vars" file - export EASY_RSA="/etc/openvpn/easy-rsa"...\n'
