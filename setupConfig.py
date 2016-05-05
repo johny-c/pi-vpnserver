@@ -4,7 +4,7 @@ import netifaces as nif
 from requests import get
 import sys
 import os
-import setupVPNclients.py
+from setupVPNclients import setup_clients
 
 ## Get answer from user
 def read_input(question="", default=""):

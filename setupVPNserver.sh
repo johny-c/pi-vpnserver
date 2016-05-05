@@ -84,7 +84,7 @@ sed -i -- "s/$oldline/$newline/g" /etc/sysctl.conf
 sysctl -p
 
 ## Update firewall rules file to your local settings and IPs etc
-printf "Copying firewall-openvpn-rules to /etc .\n"
+printf "Copying %s to %s .\n" "$fwrules" "$ETCDIR"
 cp $DDIR/firewall-openvpn-rules.sh $fwrules
 for key in SERVER_LOCAL_IP IFACE_TYPE; do
     val=$(read_from_yaml $CFG_FILE $key)

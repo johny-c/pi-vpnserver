@@ -39,8 +39,7 @@ def setup_clients(clients):
 ## Execute commands in the shell
 def shell(cmd):
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    for line in proc.stdout.readlines():
-        print line.rstrip()
+    outs, errs = proc.communicate()
 
 ## YAML configuration file path
 CWD = os.getcwd()

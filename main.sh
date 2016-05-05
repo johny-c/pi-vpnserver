@@ -22,6 +22,7 @@ export CFG_FILE="$DDIR/vpn_config.yaml"
 export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 
 ## Create vpn_config.yaml if it does not exist and change permissions
+printf "Initializing configuration file.\n"
 if [ ! -e $CFG_FILE ]; then
     cp $CFG_FILE_DEFAULT $CFG_FILE
 fi
@@ -30,6 +31,7 @@ chmod 600 $CFG_FILE
 chmod 700 $DDIR/*.sh
 
 ## Install software to run this program
+printf "\nFirst we need to install some software to make things easier.\n"
 sudo apt-get install python3-pip python3-yaml
 sudo apt-get install python-netifaces python3-netifaces
 sudo apt-get install openvpn easy-rsa curl
@@ -37,7 +39,7 @@ sudo pip3 install netifaces --upgrade
 sudo pip3 install requests --upgrade
 
 ## Setup configuration variables
-printf "First we have to setup your configuration.\n"
+printf "\nOk. Now we have to setup your configuration.\n"
 python3 setupConfig.py
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
