@@ -14,13 +14,13 @@ def read_input(question="", default=""):
 
 
 ## YAML configuration file
-VARS_FILE = 'vpn_config.yaml'
+CFG_FILE = 'vpn_config.yaml'
 
 editState = True
 while editState:
 
     ## Load saved values
-    with open(VARS_FILE, 'r') as f:
+    with open(CFG_FILE, 'r') as f:
         cfg = yaml.load(f)
 
     print("Here is your current configuration:\n")
@@ -83,5 +83,5 @@ while editState:
     MY_VARS['CLIENT_NAMES'] = setup_clients(cfg['CLIENT_NAMES'])
 
     ## Save new Configuration to yaml file
-    with open(VARS_FILE, 'w') as outfile:
+    with open(CFG_FILE, 'w') as outfile:
         outfile.write( yaml.dump(MY_VARS, default_flow_style=False) )

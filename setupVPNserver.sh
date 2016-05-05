@@ -6,8 +6,9 @@ printf "Setting up Raspberry Pi as an openVPN server!\n"
 sudo -s
 apt-get update
 apt-get upgrade
-## Install the software to build and run the VPN server
-apt-get install openvpn easy-rsa curl
+
+## Install the software needed to build and run the VPN server
+apt-get install openvpn easy-rsa
 
 ## Set the main working directory for our VPN setup
 export DDIR=$( dirname "$(readlink -f "$0")" )
@@ -15,15 +16,15 @@ export CFG_FILE="$DDIR/vpn_config.yaml"
 export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 
 ## Setup test directories structure
+## Change next line to TESTDIR="" in the master branch
 export TESTDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 export ETCDIR=$TESTDIR/etc
-export NETDIR=$ETCDIR/network
-export OVPDIR=$ETCDIR/openvpn
-export ERDIR=$OVPDIR/easy-rsa
+export ERDIR=$ETCDIR/openvpn/easy-rsa
 
-## Define file paths
-netif="$NETDIR/interfaces"
-fwrul="$ETCDIR/firewall-openvpn-rules.sh"
+## Define files used
+fwrules="firewall-openvpn-rules.sh"
+
+## Create local copy of easy-rsa
 mkdir $ERDIR
 cp /usr/share/easy-rsa $ERDIR
 
@@ -37,7 +38,7 @@ sed -i -- "s/$lineold/$linenew/g" $fnew
 
 ## Build certificate authority
 cd $ERDIR
-source ./vars
+. ./vars
 ./clean-all
 ./build-ca
 
@@ -68,8 +69,8 @@ printf "Done.\n"
 
 ## Get the server.conf file and update it to your local settings
 printf "Copying server.conf to /etc/openvpn\n"
-cp $DDIR/server.conf $OVPDIR
-fpath=$OVPDIR/server.conf
+cp $DDIR/server.conf $ETCDIR/openvpn
+fpath=$ETCDIR/openvpn/server.conf
 for key in SERVER_LOCAL_IP VPN_PORT SERVER_NAME KEY_SIZE LAN_IP GATEWAY_IP; do
     val=$(read_from_yaml $CFG_FILE $key)
     sed -i -- "s/[$key]/$val/g" $fpath
@@ -84,19 +85,19 @@ sysctl -p
 
 ## Update firewall rules file to your local settings and IPs etc
 printf "Copying firewall-openvpn-rules to /etc .\n"
-cp $DDIR/firewall-openvpn-rules.sh $fwrul
+cp $DDIR/firewall-openvpn-rules.sh $fwrules
 for key in SERVER_LOCAL_IP IFACE_TYPE; do
     val=$(read_from_yaml $CFG_FILE $key)
-    sed -i -- "s/[$key]/$val/g" $fwrul
+    sed -i -- "s/[$key]/$val/g" $fwrules
 done
 
 ## Update your interface file
 #- add line to interfaces file with a tab at the beginning
-printf "Updating $netif with firewall-openvpn-rules"
+printf "Updating %s with %s\n" "$ETCDIR/network/interfaces" "$fwrules"
 IFACE_TYPE=$(read_from_yaml $CFG_FILE "IFACE_TYPE")
-oldline=$(cat $netif | grep "iface $IFACE_TYPE inet ")
-newline="$oldline\tpre-up $fwrul"
-sed -i -- "s/$oldline/$newline/g" $netif
+oldline=$(cat "$ETCDIR/network/interfaces" | grep "iface $IFACE_TYPE inet ")
+newline="$oldline\tpre-up $fwrules"
+sed -i -- "s/$oldline/$newline/g" "$ETCDIR/network/interfaces"
 
 
 ## Setup also the client files

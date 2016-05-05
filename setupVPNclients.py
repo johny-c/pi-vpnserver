@@ -43,10 +43,11 @@ def shell(cmd):
         print line.rstrip()
 
 ## YAML configuration file path
-VARS_FILE = 'vpn_config.yaml'
+CWD = os.getcwd()
+CFG_FILE = os.path.join(CWD, 'vpn_config.yaml')
 
 ## Load saved configuration
-with open(VARS_FILE, 'r') as f:
+with open(CFG_FILE, 'r') as f:
     cfg = yaml.load(f)
 
 print("Here is your current configuration:\n")
@@ -54,12 +55,17 @@ for k in cfg:
     print("%s : %s" % (k,cfg[k]) )
 
 clients = setup_clients(cfg['CLIENT_NAMES'])
+if clients != cfg['CLIENT_NAMES']:
+    cfg['CLIENT_NAMES'] = clients
+    ## Save new Configuration to yaml file
+    with open(CFG_FILE, 'w') as outfile:
+        outfile.write( yaml.dump(cfg, default_flow_style=False) )
+
 if len(clients) == 0:
     print("No client names given. Now exiting.")
     sys.exit(0)
 
 ## Enter into the right directory
-CWD = os.getcwd()
 print("Currently working directory is %s" % CWD)
 EASY_RSA_DIR = CWD + 'test/etc/openvpn/easy-rsa'
 shell(['mkdir', '-p', EASY_RSA_DIR])
