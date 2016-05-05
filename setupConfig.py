@@ -3,6 +3,7 @@ import yaml
 import netifaces as nif
 from requests import get
 import sys
+import os
 import setupVPNclients.py
 
 ## Get answer from user
@@ -14,7 +15,9 @@ def read_input(question="", default=""):
 
 
 ## YAML configuration file
-CFG_FILE = 'vpn_config.yaml'
+CWD = os.getcwd()
+CFG_FILE = os.path.join(CWD, 'vpn_config.yaml')
+
 
 editState = True
 while editState:
