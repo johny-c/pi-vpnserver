@@ -108,17 +108,25 @@ done
 ## Update your interface file
 #- add line to interfaces file with a tab at the beginning
 sudo mkdir -p $ETCDIR/network
-if [ ! -e $ETCDIR/network/interfaces ]; then
+fpath="$ETCDIR/network/interfaces"
+if [ ! -e "$fpath" ]; then
     printf "\nNow Copying /etc/network/interfaces \nto %s/etc/network/interfaces\n" "$ETCDIR"
-    sudo cp /etc/network/interfaces $ETCDIR/network/interfaces
-    sudo chown $USER:$USER $ETCDIR/network/interfaces
+    sudo cp /etc/network/interfaces $fpath
+    sudo chown $USER:$USER $fpath
 fi
-printf "\nUpdating %s \nwith %s\n\n" "$ETCDIR/network/interfaces" "$ETCDIR/$fwrules"
+
 IFACE_TYPE=$(read_from_yaml $CFG_FILE "IFACE_TYPE")
-old=$(cat "$ETCDIR/network/interfaces" | grep "iface $IFACE_TYPE inet ")
-new=$(printf "old\tpre-up %s/%s" "$ETCDIR" "$fwrules")
-printf "\nNow replacing %s \nwith %s \nin %s\n" "$old" "$new" $fpath
-sudo sed -i -- "s@$old@$new@g" "$ETCDIR/network/interfaces"
+old=$(cat "$fpath" | grep "iface $IFACE_TYPE inet ")
+
+if [ -z $old ]; then
+    line=$(printf "iface %s inet dhcp\n\tpre-up %s/%s" "$IFACE_TYPE" "$ETCDIR" "$fwrules")
+    printf "Appending line %s to %s\n\n" "$line" "$fpath"
+    echo $line >> $fpath
+else
+    new=$(printf "%s\n\tpre-up %s/%s" "$old" "$ETCDIR" "$fwrules")
+    printf "\nNow replacing %s \nwith %s \nin %s\n" "$old" "$new" "$fpath"
+    sudo sed -i -- "s@$old@$new@g" "$fpath"
+fi
 
 
 ## Setup also the client files
