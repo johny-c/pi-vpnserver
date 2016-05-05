@@ -11,12 +11,19 @@ apt-get install openvpn easy-rsa curl
 
 ## Set the main working directory for our VPN setup
 export DDIR=$( dirname "$(readlink -f "$0")" )
-export ERDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
 export CFG_FILE="$DDIR/vpn_config.yaml"
 export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 
-netif="/etc/network/interfaces"
-fwrul="/etc/firewall-openvpn-rules.sh"
+## Setup test directories structure
+export TESTDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
+export ETCDIR=$TESTDIR/etc
+export NETDIR=$ETCDIR/network
+export OVPDIR=$ETCDIR/openvpn
+export ERDIR=$OVPDIR/easy-rsa
+
+## Define file paths
+netif="$NETDIR/interfaces"
+fwrul="$ETCDIR/firewall-openvpn-rules.sh"
 mkdir $ERDIR
 cp /usr/share/easy-rsa $ERDIR
 
@@ -61,8 +68,8 @@ printf "Done.\n"
 
 ## Get the server.conf file and update it to your local settings
 printf "Copying server.conf to /etc/openvpn\n"
-cp $DDIR/server.conf /etc/openvpn/
-fpath=/etc/openvpn/server.conf
+cp $DDIR/server.conf $OVPDIR
+fpath=$OVPDIR/server.conf
 for key in SERVER_LOCAL_IP VPN_PORT SERVER_NAME KEY_SIZE LAN_IP GATEWAY_IP; do
     val=$(read_from_yaml $CFG_FILE $key)
     sed -i -- "s/[$key]/$val/g" $fpath

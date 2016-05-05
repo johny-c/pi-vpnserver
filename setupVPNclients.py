@@ -1,6 +1,40 @@
 #!/usr/bin/env python3
 import subprocess
 import yaml
+import sys
+import os
+
+## Specify client names to make keys for
+def setup_clients(clients):
+    ## Read clients
+    if len(currentClients) > 0:
+        print("\nThese are your clients:")
+        for client in clients:
+            print("%s  " % client)
+
+        answer = ''
+        while answer != 'y' and answer != 'n':
+            answer = input("\nDo you want to delete these clients (y/n)? ")
+        if answer == 'y':
+            clients = set()
+    else:
+        print("\nYou currently have no clients.")
+
+    while a != 'y' and a != 'n':
+        a = input("Do you want to add some client names now (y/n)? ")
+    if a == 'n':
+        return clients
+
+    inputState = True
+    while inputState:
+        client = input("Pick a name for a new client or leave blank to stop adding clients.\n")
+        if client == '':
+            inputState = False
+        else:
+            clients.add(client)
+            print("Added client %s\n" % client )
+
+    return clients
 
 ## Execute commands in the shell
 def shell(cmd):
@@ -19,8 +53,16 @@ print("Here is your current configuration:\n")
 for k in cfg:
     print("%s : %s" % (k,cfg[k]) )
 
+clients = setup_clients(cfg['CLIENT_NAMES'])
+if len(clients) == 0:
+    print("No client names given. Now exiting.")
+    sys.exit(0)
+
 ## Enter into the right directory
-EASY_RSA_DIR = '/etc/openvpn/easy-rsa'
+CWD = os.getcwd()
+print("Currently working directory is %s" % CWD)
+EASY_RSA_DIR = CWD + 'test/etc/openvpn/easy-rsa'
+shell(['mkdir', '-p', EASY_RSA_DIR])
 shell(['cd', EASY_RSA_DIR])
 
 ## Build the client keys for your server, enter a vpn username

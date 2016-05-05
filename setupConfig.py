@@ -2,12 +2,15 @@
 import yaml
 import netifaces as nif
 from requests import get
+import setupVPNclients.py
 
+## Get answer from user
 def read_input(question="", default=""):
     answer = input(question + " (" + default + ") ? ")
     if answer == '':
         answer = default
     return answer
+
 
 ## YAML configuration file
 VARS_FILE = 'vpn_config.yaml'
@@ -75,28 +78,7 @@ while editState:
     MY_VARS['VPN_PORT']= read_input( "Pick a port allowing VPN connections on your server", str(doc['VPN_PORT']) )
     MY_VARS['KEY_SIZE']= read_input( "Choose authentication key size", str(doc['KEY_SIZE']) )
     MY_VARS['SERVER_NAME']= read_input( "Pick a name for your server", doc['SERVER_NAME'] )
-    MY_VARS['CLIENT_NAMES']= doc['CLIENT_NAMES']
-
-    ## Read clients
-    print("\nThese are your clients:")
-    for client in doc['CLIENT_NAMES']:
-        print("%s  " % client)
-
-    answer = ''
-    while answer != 'y' and answer != 'n':
-        answer = input("\nDo you want to delete these clients (y/n)? ")
-
-    if answer == 'y':
-        MY_VARS['CLIENT_NAMES'] = set()
-
-    inputState = True
-    while inputState:
-        client = input("Pick a name for a new client or leave blank to stop adding clients.\n")
-        if client == '':
-            inputState = False
-        else:
-            MY_VARS['CLIENT_NAMES'].add(client)
-            print("Added client %s\n" % client )
+    MY_VARS['CLIENT_NAMES'] = setup_clients(doc['CLIENT_NAMES'])
 
     ## Save new Configuration to yaml file
     with open(VARS_FILE, 'w') as outfile:
