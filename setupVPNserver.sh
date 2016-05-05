@@ -30,7 +30,7 @@ sudo cp -r $ORIGERDIR $ETCDIR/openvpn
 sudo chown -R $USER:$USER $ERDIR
 
 ## Edit the vars file - Use '@' as sed delimiter because we use / already
-printf 'Editing the "vars" file - export EASY_RSA="/etc/openvpn/easy-rsa"...\n'
+printf '\nEditing the "vars" file - export EASY_RSA="/etc/openvpn/easy-rsa"...\n'
 fnew=$ERDIR/vars
 forig="$ORIGERDIR/vars"
 lineold=$(cat $forig | grep "export EASY_RSA")
@@ -46,9 +46,9 @@ cd $ERDIR
 
 ## Build key for your server, name your server here
 SERVER_NAME=$(read_from_yaml $CFG_FILE "SERVER_NAME")
-printf "Now building the key.server\n
+printf "\nNow building the key server\n\n
         Common name must be the same as the server name (%s)\n
-        Leave the challenge password blank.\n" $SERVER_NAME
+        Leave the challenge password blank.\n\n" $SERVER_NAME
 ./build-key-server $SERVER_NAME
 
 # ## Build the client keys for your server, enter a vpn username
@@ -59,57 +59,71 @@ printf "Now building the key.server\n
 #     openssl rsa -in keys/$CLIENT_NAME.key -des3 -out keys/$CLIENT_NAME.3des.key
 # done
 
-printf "Now you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)...\n"
+printf "\nNow you have to wait for a while (about 1 hour on a Raspberry Pi 1 Model B)...\n"
 printf "Running Diffie-Hellman algorithm . . .\n"
 ./build-dh
-printf "\nDH algorithm finished!\n"
+printf "\nDH algorithm finished!\n\n"
 
 ## Generate static key for TLS auth
-printf "Generating static key to avoid DDoS attacks...\n"
+printf "\nGenerating static key to avoid DDoS attacks...\n\n"
 openvpn --genkey --secret keys/ta.key
-printf "Done.\n"
+printf "Done.\n\n"
 
 ## Get the server.conf file and update it to your local settings
-printf "\nCopying server.conf to %s/openvpn\n" "$ETCDIR"
+printf "\nCopying 'server.conf' from %s to '%s/openvpn'\n\n" "$CWD" "$ETCDIR"
 cp $CWD/server.conf $ETCDIR/openvpn
 fpath=$ETCDIR/openvpn/server.conf
 for key in SERVER_LOCAL_IP VPN_PORT SERVER_NAME KEY_SIZE LAN_IP GATEWAY_IP; do
     old="[$key]"
     new=$(read_from_yaml $CFG_FILE $key)
+    printf "\nNow replacing %s with %s in %s\n" "$old" "$new" $fpath
     sed -i -- "s/$old/$new/g" $fpath
 done
 
 ## Enable ipv4 forwarding
-printf "Uncommenting line to enable packet forwarding in /etc/sysctl.conf .\n"
-newline="net.ipv4.ip_forward=1"
-oldline="#$newline"
-sed -i -- "s/$oldline/$newline/g" /etc/sysctl.conf
-sysctl -p
+printf "\nUncommenting line to enable packet forwarding in /etc/sysctl.conf .\n"
+fpath=/etc/sysctl.conf
+new="net.ipv4.ip_forward=1"
+old="#$new"
+printf "\nNow replacing %s with %s in %s\n" "$old" "$new" $fpath
+sed -i -- "s/$old/$new/g" $fpath
+sudo sysctl -p
 
 ## Update firewall rules file to your local settings and IPs etc
-printf "Copying %s to %s .\n" "$fwrules" "$ETCDIR"
+printf "\nCopying %s to %s .\n\n" "$fwrules" "$ETCDIR"
 sudo cp $CWD/$fwrules $ETCDIR/$fwrules
+sudo chown $USER:$USER $ETCDIR/$fwrules
+fpath=$ETCDIR/$fwrules
 for key in SERVER_LOCAL_IP IFACE_TYPE; do
     old="[$key]"
     new=$(read_from_yaml $CFG_FILE $key)
-    sed -i -- "s/$old/$new/g" $ETCDIR/$fwrules
+    printf "\nNow replacing %s with %s in %s\n" "$old" "$new" $fpath
+    sed -i -- "s/$old/$new/g" $fpath
 done
 
 ## Update your interface file
 #- add line to interfaces file with a tab at the beginning
-printf "Updating %s with %s\n" "$ETCDIR/network/interfaces" "$ETCDIR/$fwrules"
+sudo mkdir -p $ETCDIR/network
+if [ ! -e $ETCDIR/network/interfaces ]; then
+    printf "\nNow Copying /etc/network/interfaces to %s/etc/network/interfaces\n" "$ETCDIR"
+    sudo cp /etc/network/interfaces $ETCDIR/network/interfaces
+    sudo chown $USER:$USER $ETCDIR/network/interfaces
+fi
+printf "\nUpdating %s with %s\n\n" "$ETCDIR/network/interfaces" "$ETCDIR/$fwrules"
 IFACE_TYPE=$(read_from_yaml $CFG_FILE "IFACE_TYPE")
-oldline=$(cat "$ETCDIR/network/interfaces" | grep "iface $IFACE_TYPE inet ")
-newline="$oldline\tpre-up $ETCDIR/$fwrules"
-sudo sed -i -- "s@$oldline@$newline@g" "$ETCDIR/network/interfaces"
+old=$(cat "$ETCDIR/network/interfaces" | grep "iface $IFACE_TYPE inet ")
+new="$old\tpre-up $ETCDIR/$fwrules"
+printf "\nNow replacing %s with %s in %s\n" "$old" "$new" $fpath
+sudo sed -i -- "s@$old@$new@g" "$ETCDIR/network/interfaces"
 
 
 ## Setup also the client files
 ## Download the default file and update settings
-printf "Copying Default.txt to %s.\n
-        You may want to set your DDNS name or public IP" "$ERDIR/keys"
-cp $CWD/Default.txt $ERDIR/keys
+printf "\nCopying 'Default.txt' from %s to %s .\n\n" "$CWD" "$ERDIR/keys"
+sudo cp $CWD/Default.txt $ERDIR/keys
+
 fpath=$ERDIR/keys/Default.txt
+printf "You may want to reset your DDNS name or public IP in %s\n\n" "$fpath"
 for key in SERVER_PUBLIC_IP VPN_PORT; do
     old="[$key]"
     new=$(read_from_yaml $CFG_FILE $key)
@@ -117,11 +131,32 @@ for key in SERVER_PUBLIC_IP VPN_PORT; do
 done
 
 ## Get the script to generate the client files
-cp $CWD/makeOVPN.sh $ERDIR/keys
+printf "\nCopying 'makeOVPN.sh' from %s to %s .\n\n" "$CWD" "$ERDIR/keys"
+sudo cp $CWD/makeOVPN.sh $ERDIR/keys
 
 ## Set permissions for the file
+printf "\nChanging permissions for 'makeOVPN.sh'\n\n"
 cd $ERDIR/keys
-chmod 700 makeOVPN.sh
+sudo chmod 700 makeOVPN.sh
 
 ## Reboot the server
-printf "\nVPN Server should be good to go now!\n"
+printf "\nVPN Server should be good to go now!\n\n"
+printf "-------------------------------------------------------------------\n\n"
+printf "\nNow setting up the clients.\n\n"
+
+## Enter into the right directory
+cd $ERDIR
+CLIENT_NAMES=( $( $(pcregrep -M '^  .*\n' $CFG_FILE) | cut -d : -f 1 ) )
+
+## Build the client keys for your server, enter a vpn username
+printf "Now building the client keys. Leave the challenge password blank.\n\n"
+for client in ${CLIENT_NAMES[@]}; do
+    print "Building key for client: %s\n\n" $client
+    . /vars
+    ./build-key-pass $client
+    openssl rsa -in "$client.key" -des3 -out "$client.3des.key"
+    ./keys/makeOVPN $client
+done
+
+printf "\nClients should be ready! You just have to reboot\n"
+printf "After the rebooting, copy the [client].ovpn files to your client devices!\n"

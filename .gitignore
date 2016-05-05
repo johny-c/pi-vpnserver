@@ -4,3 +4,4 @@
 vpn_config.yaml
 setupVPNclients.sh
 __pycache__
+setupVPNclients.py

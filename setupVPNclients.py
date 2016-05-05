@@ -55,26 +55,20 @@ print("Here is your current configuration:\n")
 for k in cfg:
     print("%s : %s" % (k,cfg[k]) )
 
-clients = set_names(cfg['CLIENT_NAMES'])
-if clients != cfg['CLIENT_NAMES']:
-    cfg['CLIENT_NAMES'] = clients
-    ## Save new Configuration to yaml file
-    with open(CFG_FILE, 'w') as outfile:
-        outfile.write( yaml.dump(cfg, default_flow_style=False) )
-
+clients = cfg['CLIENT_NAMES']
 if len(clients) == 0:
     print("No client names given. Now exiting.")
     sys.exit(0)
 
 ## Enter into the right directory
-print("Currently working directory is %s" % CWD)
+print("Currently working directory is %s\n" % CWD)
 EASY_RSA_DIR = os.path.join(CWD, 'test', 'etc', 'openvpn', 'easy-rsa')
 KEYS_DIR = os.path.join(EASY_RSA_DIR, 'keys')
 shell(['mkdir', '-p', KEYS_DIR])
 os.chdir(EASY_RSA_DIR)
 
 ## Build the client keys for your server, enter a vpn username
-print("Now building the client keys. Leave the challenge password blank.")
+print("Now building the client keys. Leave the challenge password blank.\n")
 for CLIENT_NAME in cfg['CLIENT_NAMES']:
     shell(['./build-key-pass', str(CLIENT_NAME)])
     keypath = os.path.join(KEYS_DIR, str(CLIENT_NAME))
@@ -84,7 +78,7 @@ for CLIENT_NAME in cfg['CLIENT_NAMES']:
 os.chdir(KEYS_DIR)
 
 ## Run the file and enter your server / client details
-print("Now creating the client ovpn files...")
+print("Now creating the client ovpn files...\n")
 for CLIENT_NAME in cfg['CLIENT_NAMES']:
     shell(['./makeOVPN.sh', str(CLIENT_NAME)])
     #./makeOVPN.sh CLIENT_NAME

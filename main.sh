@@ -22,7 +22,7 @@ export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
 printf "\nFirst we need to install some software to make things easier.\n\n"
 sudo apt-get install python3-pip python3-yaml
 sudo apt-get install python-netifaces python3-netifaces
-sudo apt-get install openvpn easy-rsa curl
+sudo apt-get install openvpn easy-rsa curl pcregrep
 sudo pip3 install netifaces --upgrade
 sudo pip3 install requests --upgrade
 
@@ -47,9 +47,3 @@ python3 setupConfig.py
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
 sudo ./setupVPNserver.sh
-
-printf "Your VPN server is set. Now setting up the clients...\n"
-python3 setupVPNclients.py
-
-printf "Clients should be set up. You are done! Now you just have to reboot\n"
-printf "After the reboot, copy the [client].ovpn files to your client devices!\n"
