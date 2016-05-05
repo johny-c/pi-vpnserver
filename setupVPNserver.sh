@@ -7,7 +7,7 @@ sudo -s
 apt-get update
 apt-get upgrade
 ## Install the software to build and run the VPN server
-apt-get install openvpn easy-rsa curl python3-yaml
+apt-get install openvpn easy-rsa curl
 
 ## Set the main working directory for our VPN setup
 export DDIR=$( dirname "$(readlink -f "$0")" )
