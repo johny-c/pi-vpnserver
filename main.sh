@@ -14,9 +14,9 @@ if [ $? -eq 1 ]; then
 fi
 
 ## Set the main working directory for our VPN setup
-export DDIR=$( dirname "$(readlink -f "$0")" )
-export CFG_FILE="$DDIR/vpn_config.yaml"
-export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
+CWD=$( dirname "$(readlink -f "$0")" )
+CFG_FILE="$CWD/vpn_config.yaml"
+CFG_FILE_DEFAULT="$CWD/vpn_config.default.yaml"
 
 ## Install software to run this program
 printf "\nFirst we need to install some software to make things easier.\n\n"
@@ -39,7 +39,7 @@ if [ ! -e $CFG_FILE ]; then
 fi
 chmod 600 $CFG_FILE_DEFAULT
 chmod 600 $CFG_FILE
-chmod 700 $DDIR/*.sh
+chmod 700 $CWD/*.sh
 
 ## Setup configuration variables
 printf "\nOk. Now we have to setup your configuration.\n"
