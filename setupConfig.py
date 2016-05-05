@@ -2,6 +2,7 @@
 import yaml
 import netifaces as nif
 from requests import get
+import sys
 import setupVPNclients.py
 
 ## Get answer from user
@@ -20,18 +21,19 @@ while editState:
 
     ## Load saved values
     with open(VARS_FILE, 'r') as f:
-        doc = yaml.load(f)
+        cfg = yaml.load(f)
 
     print("Here is your current configuration:\n")
-    for k in doc:
-        print("%s : %s" % (k,doc[k]) )
+    for k in cfg:
+        print("%s : %s" % (k,cfg[k]) )
 
     answer = ''
     while answer != 'y' and answer != 'n':
         answer = input("\nDo you want to change your configuration (y/n)? ")
 
     if answer == 'n':
-        exit(0)
+        print("Configuration did not change. Now exiting.")
+        sys.exit(0)
 
     ## Variables dictionary
     MY_VARS = {}
@@ -44,7 +46,7 @@ while editState:
     netif = ''
     while netif not in netifs:
         print("Available network interfaces: %s" % netifs )
-        print("Saved network interface: %s" % doc['IFACE_TYPE'] )
+        print("Saved network interface: %s" % cfg['IFACE_TYPE'] )
         netif = input("Choose your network interface: ")
     MY_VARS['IFACE_TYPE'] = netif
 
@@ -75,10 +77,10 @@ while editState:
     print("\nA few more to go . . .")
     print("Press enter to keep the default choice.\n")
 
-    MY_VARS['VPN_PORT']= read_input( "Pick a port allowing VPN connections on your server", str(doc['VPN_PORT']) )
-    MY_VARS['KEY_SIZE']= read_input( "Choose authentication key size", str(doc['KEY_SIZE']) )
-    MY_VARS['SERVER_NAME']= read_input( "Pick a name for your server", doc['SERVER_NAME'] )
-    MY_VARS['CLIENT_NAMES'] = setup_clients(doc['CLIENT_NAMES'])
+    MY_VARS['VPN_PORT']= read_input( "Pick a port allowing VPN connections on your server", str(cfg['VPN_PORT']) )
+    MY_VARS['KEY_SIZE']= read_input( "Choose authentication key size", str(cfg['KEY_SIZE']) )
+    MY_VARS['SERVER_NAME']= read_input( "Pick a name for your server", cfg['SERVER_NAME'] )
+    MY_VARS['CLIENT_NAMES'] = setup_clients(cfg['CLIENT_NAMES'])
 
     ## Save new Configuration to yaml file
     with open(VARS_FILE, 'w') as outfile:

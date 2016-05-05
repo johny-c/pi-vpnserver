@@ -38,7 +38,7 @@ sudo pip3 install requests --upgrade
 
 ## Setup configuration variables
 printf "First we have to setup your configuration.\n"
-python3 setup_vars.py
+python3 setupConfig.py
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
 ./setupVPNserver.sh
