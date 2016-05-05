@@ -13,6 +13,24 @@ function read_input {
     fi
 }
 
+function ask_binary {
+    question="$1"
+    y="$2"
+    n="$3"
+
+    ans="$2$3"
+    while [ $ans != $y -a $ans != $n ]; do
+        printf "\n\n%s (%s/%s)? " "$question" "$y" "$n"
+        read ans
+    done
+
+    if [ "$ans" != "$y" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 
 function read_from_yaml {
     fpath="$1"

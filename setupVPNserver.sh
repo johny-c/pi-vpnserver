@@ -3,40 +3,42 @@
 printf "Setting up Raspberry Pi as an openVPN server!\n"
 
 ## Update the Server
-sudo -s
-apt-get update
-apt-get upgrade
+sudo apt-get update
+sudo apt-get upgrade
 
 ## Install the software needed to build and run the VPN server
-apt-get install openvpn easy-rsa
+sudo apt-get install openvpn easy-rsa
 
 ## Set the main working directory for our VPN setup
-export DDIR=$( dirname "$(readlink -f "$0")" )
-export CFG_FILE="$DDIR/vpn_config.yaml"
-export CFG_FILE_DEFAULT="$DDIR/vpn_config.default.yaml"
+export CWD=$( dirname "$(readlink -f "$0")" )
+export CFG_FILE="$CWD/vpn_config.yaml"
+export CFG_FILE_DEFAULT="$CWD/vpn_config.default.yaml"
 
 ## Setup test directories structure
 ## Change next line to TESTDIR="" in the master branch
-export TESTDIR="$DDIR/test" #"/etc/openvpn/easy-rsa"
+export TESTDIR=$CWD/test #"/etc/openvpn/easy-rsa"
 export ETCDIR=$TESTDIR/etc
 export ERDIR=$ETCDIR/openvpn/easy-rsa
+export ORIGERDIR=/usr/share/easy-rsa
 
 ## Define files used
 fwrules="firewall-openvpn-rules.sh"
 
 ## Create local copy of easy-rsa
 mkdir -p $ERDIR/keys
-cp -r /usr/share/easy-rsa $ERDIR
+sudo cp -r $ORIGERDIR $ETCDIR/openvpn
+sudo chown -R $USER:$USER $ERDIR
 
-## Edit the vars file
+## Edit the vars file - Use '@' as sed delimiter because we use / already
 printf 'Editing the "vars" file - export EASY_RSA="/etc/openvpn/easy-rsa"...\n'
 fnew=$ERDIR/vars
-forig="/usr/share/easy-rsa/vars"
+forig="$ORIGERDIR/vars"
 lineold=$(cat $forig | grep "export EASY_RSA")
 linenew="export EASY_RSA=$ERDIR"
-sed -i -- "s/$lineold/$linenew/g" $fnew
+sed -i -- "s@$lineold@$linenew@g" $fnew
 
 ## Build certificate authority
+. $CWD/utils.sh
 cd $ERDIR
 . ./vars
 ./clean-all
@@ -68,12 +70,13 @@ openvpn --genkey --secret keys/ta.key
 printf "Done.\n"
 
 ## Get the server.conf file and update it to your local settings
-printf "Copying server.conf to /etc/openvpn\n"
-cp $DDIR/server.conf $ETCDIR/openvpn
+printf "\nCopying server.conf to %s/openvpn\n" "$ETCDIR"
+cp $CWD/server.conf $ETCDIR/openvpn
 fpath=$ETCDIR/openvpn/server.conf
 for key in SERVER_LOCAL_IP VPN_PORT SERVER_NAME KEY_SIZE LAN_IP GATEWAY_IP; do
-    val=$(read_from_yaml $CFG_FILE $key)
-    sed -i -- "s/[$key]/$val/g" $fpath
+    old="[$key]"
+    new=$(read_from_yaml $CFG_FILE $key)
+    sed -i -- "s/$old/$new/g" $fpath
 done
 
 ## Enable ipv4 forwarding
@@ -85,38 +88,40 @@ sysctl -p
 
 ## Update firewall rules file to your local settings and IPs etc
 printf "Copying %s to %s .\n" "$fwrules" "$ETCDIR"
-cp $DDIR/firewall-openvpn-rules.sh $fwrules
+sudo cp $CWD/$fwrules $ETCDIR/$fwrules
 for key in SERVER_LOCAL_IP IFACE_TYPE; do
-    val=$(read_from_yaml $CFG_FILE $key)
-    sed -i -- "s/[$key]/$val/g" $fwrules
+    old="[$key]"
+    new=$(read_from_yaml $CFG_FILE $key)
+    sed -i -- "s/$old/$new/g" $ETCDIR/$fwrules
 done
 
 ## Update your interface file
 #- add line to interfaces file with a tab at the beginning
-printf "Updating %s with %s\n" "$ETCDIR/network/interfaces" "$fwrules"
+printf "Updating %s with %s\n" "$ETCDIR/network/interfaces" "$ETCDIR/$fwrules"
 IFACE_TYPE=$(read_from_yaml $CFG_FILE "IFACE_TYPE")
 oldline=$(cat "$ETCDIR/network/interfaces" | grep "iface $IFACE_TYPE inet ")
-newline="$oldline\tpre-up $fwrules"
-sed -i -- "s/$oldline/$newline/g" "$ETCDIR/network/interfaces"
+newline="$oldline\tpre-up $ETCDIR/$fwrules"
+sudo sed -i -- "s@$oldline@$newline@g" "$ETCDIR/network/interfaces"
 
 
 ## Setup also the client files
 ## Download the default file and update settings
 printf "Copying Default.txt to %s.\n
         You may want to set your DDNS name or public IP" "$ERDIR/keys"
-cp $DDIR/Default.txt $ERDIR/keys
+cp $CWD/Default.txt $ERDIR/keys
 fpath=$ERDIR/keys/Default.txt
 for key in SERVER_PUBLIC_IP VPN_PORT; do
-    val=$(read_from_yaml $CFG_FILE $key)
-    sed -i -- "s/[$key]/$val/g" $fpath
+    old="[$key]"
+    new=$(read_from_yaml $CFG_FILE $key)
+    sed -i -- "s@$old@$new@g" $fpath
 done
 
 ## Get the script to generate the client files
-cp $DDIR/makeOVPN.sh $ERDIR/keys
+cp $CWD/makeOVPN.sh $ERDIR/keys
 
 ## Set permissions for the file
 cd $ERDIR/keys
 chmod 700 makeOVPN.sh
 
 ## Reboot the server
-printf "Server should be good to go now!\n"
+printf "\nVPN Server should be good to go now!\n"

@@ -6,8 +6,8 @@ import os
 
 ## Execute commands in the shell
 def shell(cmd):
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    outs, errs = proc.communicate()
+    proc = subprocess.call(cmd)
+    #outs, errs = proc.communicate()
 
 ## Specify client names to make keys for
 def set_names(clients):
