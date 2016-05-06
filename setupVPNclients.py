@@ -42,43 +42,44 @@ def set_names(clients):
 
     return clients
 
+# Setup the clients (currently substituted by bash)
+def setup_the_clients():
+    ## YAML configuration file path
+    CWD = os.getcwd()
+    CFG_FILE = os.path.join(CWD, 'vpn_config.yaml')
 
-## YAML configuration file path
-CWD = os.getcwd()
-CFG_FILE = os.path.join(CWD, 'vpn_config.yaml')
+    ## Load saved configuration
+    with open(CFG_FILE, 'r') as f:
+        cfg = yaml.load(f)
 
-## Load saved configuration
-with open(CFG_FILE, 'r') as f:
-    cfg = yaml.load(f)
+    print("Here is your current configuration:\n")
+    for k in cfg:
+        print("%s : %s" % (k,cfg[k]) )
 
-print("Here is your current configuration:\n")
-for k in cfg:
-    print("%s : %s" % (k,cfg[k]) )
+    clients = cfg['CLIENT_NAMES']
+    if len(clients) == 0:
+        print("No client names given. Now exiting.")
+        sys.exit(0)
 
-clients = cfg['CLIENT_NAMES']
-if len(clients) == 0:
-    print("No client names given. Now exiting.")
-    sys.exit(0)
+    ## Enter into the right directory
+    print("Currently working directory is %s\n" % CWD)
+    EASY_RSA_DIR = os.path.join(CWD, 'test', 'etc', 'openvpn', 'easy-rsa')
+    KEYS_DIR = os.path.join(EASY_RSA_DIR, 'keys')
+    shell(['mkdir', '-p', KEYS_DIR])
+    os.chdir(EASY_RSA_DIR)
 
-## Enter into the right directory
-print("Currently working directory is %s\n" % CWD)
-EASY_RSA_DIR = os.path.join(CWD, 'test', 'etc', 'openvpn', 'easy-rsa')
-KEYS_DIR = os.path.join(EASY_RSA_DIR, 'keys')
-shell(['mkdir', '-p', KEYS_DIR])
-os.chdir(EASY_RSA_DIR)
+    ## Build the client keys for your server, enter a vpn username
+    print("Now building the client keys. Leave the challenge password blank.\n")
+    for CLIENT_NAME in cfg['CLIENT_NAMES']:
+        shell(['./build-key-pass', str(CLIENT_NAME)])
+        keypath = os.path.join(KEYS_DIR, str(CLIENT_NAME))
+        shell(['openssl', 'rsa', '-in', keypath + '.key', '-des3', '-out', keypath + '.3des.key'])
 
-## Build the client keys for your server, enter a vpn username
-print("Now building the client keys. Leave the challenge password blank.\n")
-for CLIENT_NAME in cfg['CLIENT_NAMES']:
-    shell(['./build-key-pass', str(CLIENT_NAME)])
-    keypath = os.path.join(KEYS_DIR, str(CLIENT_NAME))
-    shell(['openssl', 'rsa', '-in', keypath + '.key', '-des3', '-out', keypath + '.3des.key'])
+    ## Enter into the right directory
+    os.chdir(KEYS_DIR)
 
-## Enter into the right directory
-os.chdir(KEYS_DIR)
-
-## Run the file and enter your server / client details
-print("Now creating the client ovpn files...\n")
-for CLIENT_NAME in cfg['CLIENT_NAMES']:
-    shell(['./makeOVPN.sh', str(CLIENT_NAME)])
-    #./makeOVPN.sh CLIENT_NAME
+    ## Run the file and enter your server / client details
+    print("Now creating the client ovpn files...\n")
+    for CLIENT_NAME in cfg['CLIENT_NAMES']:
+        shell(['./makeOVPN.sh', str(CLIENT_NAME)])
+        #./makeOVPN.sh CLIENT_NAME

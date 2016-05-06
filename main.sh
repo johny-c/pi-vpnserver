@@ -39,11 +39,11 @@ if [ ! -e $CFG_FILE ]; then
 fi
 chmod 600 $CFG_FILE_DEFAULT
 chmod 600 $CFG_FILE
-chmod 700 $CWD/*.sh
+#chmod 700 $CWD/*.sh
 
 ## Setup configuration variables
 printf "\nOk. Now we have to setup your configuration.\n"
 python3 setupConfig.py
 
 printf "Your configuration is set. Now setting up the vpn server...\n"
-sudo ./setupVPNserver.sh
+sudo ./setupVPNserver.sh $USER
