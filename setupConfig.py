@@ -1,10 +1,9 @@
 #!/usr/bin/python3
+import sys
+import os
 import yaml
 import netifaces as nif
 from requests import get
-import sys
-import os
-from setupVPNclients import set_names
 
 ## Get answer from user
 def read_input(question="", default=""):
@@ -13,8 +12,40 @@ def read_input(question="", default=""):
         answer = default
     return answer
 
-if __name__ == '__main__':
+## Specify client names to make keys for
+def set_names(clients):
+    ## Read clients
+    if len(clients) > 0:
+        print("\nThese are your clients:")
+        for client in clients:
+            print("%s  " % client)
 
+        answer = ''
+        while answer != 'y' and answer != 'n':
+            answer = input("\nDo you want to delete these clients (y/n)? ")
+        if answer == 'y':
+            clients = set()
+    else:
+        print("\nYou currently have no clients.")
+
+    answer = ''
+    while answer != 'y' and answer != 'n':
+        answer = input("Do you want to add some client names now (y/n)? ")
+    if answer == 'n':
+        return clients
+
+    inputState = True
+    while inputState:
+        client = input("Pick a name for a new client or leave blank to stop adding clients.\n")
+        if client == '':
+            inputState = False
+        else:
+            clients.add(client)
+            print("Added client %s\n" % client )
+
+    return clients
+
+if __name__ == '__main__':
     ## YAML configuration file
     CWD = os.getcwd()
     CFG_FILE = os.path.join(CWD, 'vpn_config.yaml')
@@ -41,15 +72,14 @@ if __name__ == '__main__':
         MY_VARS = {}
 
         ## Setup network variables
-        print("Press enter to keep the default choice.\n")
+        print("Press enter to keep the default choice (in parentheses).\n")
 
         # Set network interface
         netifs = nif.interfaces()
         netif = ''
         while netif not in netifs:
             print("Available network interfaces: %s" % netifs )
-            print("Saved network interface: %s" % cfg['IFACE_TYPE'] )
-            netif = input("Choose your network interface: ")
+            netif = read_input("Choose your network interface",  cfg['IFACE_TYPE'] )
         MY_VARS['IFACE_TYPE'] = netif
 
         # Set server local ip
@@ -79,8 +109,8 @@ if __name__ == '__main__':
         print("\nA few more to go . . .")
         print("Press enter to keep the default choice.\n")
 
-        MY_VARS['VPN_PORT']= read_input( "Pick a port allowing VPN connections on your server", str(cfg['VPN_PORT']) )
-        MY_VARS['KEY_SIZE']= read_input( "Choose authentication key size", str(cfg['KEY_SIZE']) )
+        MY_VARS['VPN_PORT']= int( read_input( "Pick a port allowing VPN connections on your server", str(cfg['VPN_PORT']) ) )
+        MY_VARS['KEY_SIZE']= int( read_input( "Choose authentication key size", str(cfg['KEY_SIZE']) ) )
         MY_VARS['SERVER_NAME']= read_input( "Pick a name for your server", cfg['SERVER_NAME'] )
         MY_VARS['CLIENT_NAMES'] = set_names(cfg['CLIENT_NAMES'])
 

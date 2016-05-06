@@ -13,6 +13,7 @@ apt-get install openvpn easy-rsa
 CWD=$( dirname "$(readlink -f "$0")" )
 CFG_FILE="$CWD/vpn_config.yaml"
 CFG_FILE_DEFAULT="$CWD/vpn_config.default.yaml"
+. $CWD/utils.sh
 
 ## Setup test directories structure
 ## Change next line to TESTDIR="" in the master branch
@@ -26,21 +27,27 @@ ORIGERDIR=/usr/share/easy-rsa
 fwrules="firewall-openvpn-rules.sh"
 
 ## Create local copy of easy-rsa
-cp -r $ORIGERDIR $ETCDIR/openvpn
 mkdir -p $KEYS_DIR # Make keys directory first
-chown -R $U:$U $ERDIR # Then give user rights
+cp -r $ORIGERDIR $ETCDIR/openvpn
+#chown -R $U:$U $ERDIR # Then give user rights
 
 ## Edit the vars file - Use '@' as sed delimiter because we use / already
 printf '\nEditing "vars" file...\n'
 fpath=$ERDIR/vars
 forig="$ORIGERDIR/vars"
+# Replace the path to EASY_RSA directory
 old=$(cat $forig | grep "export EASY_RSA")
 new=$(printf 'export EASY_RSA="%s"' "$ERDIR")
 printf "\nNow replacing %s \nwith %s \nin %s\n" "$old" "$new" $fpath
 sed -i -- "s@$old@$new@g" $fpath
+# Replace the KEY_SIZE preference
+old=$(cat $forig | grep "export KEY_SIZE")
+KS=$(read_from_yaml $CFG_FILE KEY_SIZE)
+new=$(printf 'export KEY_SIZE=%d' $KS)
+printf "\nNow replacing %s \nwith %s \nin %s\n" "$old" "$new" $fpath
+sed -i -- "s@$old@$new@g" $fpath
 
 ## Source files
-. $CWD/utils.sh
 cd $ERDIR
 . ./vars
 
@@ -132,7 +139,7 @@ if [ -z "$old" ]; then
     read -p "Press any key..."
     echo "$new" >> $fpath
 else
-    new=$(printf "%s\n\tpre-up %s/%s" "$old" "$ETCDIR" "$fwrules")
+    new="$old\n\tpre-up $ETCDIR/$fwrules"
     printf "\nNow replacing %s \nwith %s \nin %s\n" "$old" "$new" "$fpath"
     read -p "Press any key..."
     sed -i -- "s@$old@$new@g" "$fpath"
