@@ -17,7 +17,7 @@ CFG_FILE_DEFAULT="$CWD/vpn_config.default.yaml"
 
 ## Setup test directories structure
 ## Change next line to TESTDIR="" in the master branch
-TESTDIR=$CWD/test
+TESTDIR=""
 ETCDIR=$TESTDIR/etc
 ERDIR=$ETCDIR/openvpn/easy-rsa
 KEYS_DIR=$ERDIR/keys
@@ -123,7 +123,7 @@ done
 mkdir -p $ETCDIR/network
 fpath="$ETCDIR/network/interfaces"
 if [ ! -e "$fpath" ]; then
-    printf "\nNow Copying /etc/network/interfaces \nto %s/etc/network/interfaces\n" "$ETCDIR"
+    printf "\nNow Copying /etc/network/interfaces \nto %s/network/interfaces\n" "$ETCDIR"
     read -p "Press any key..."
     cp /etc/network/interfaces $fpath
     #chown $U:$U $fpath
